@@ -1,0 +1,64 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.15.1
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\ljx10\Documents\develop\节点管理面板\.npmrc
+5 silly config load:file:C:\Users\ljx10\.npmrc
+6 silly config load:file:C:\Users\ljx10\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:C:\Users\ljx10\Documents\develop\节点管理面板\.npm-cache\_logs\2026-03-24T05_15_27_609Z-
+10 verbose logfile C:\Users\ljx10\Documents\develop\节点管理面板\.npm-cache\_logs\2026-03-24T05_15_27_609Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly idealTree buildDeps
+14 silly placeDep ROOT @airport/sdk@0.1.0 OK for:  want: file:C:\Users\ljx10\Documents\develop\节点管理面板\packages\sdk
+15 silly placeDep ROOT worker@0.1.0 OK for:  want: file:C:\Users\ljx10\Documents\develop\节点管理面板\apps\worker
+16 silly fetch manifest bullmq@^4.12.0
+17 silly packumentCache full:https://registry.npmmirror.com/bullmq cache-miss
+18 http fetch GET 200 https://registry.npmmirror.com/bullmq 295ms (cache miss)
+19 silly packumentCache full:https://registry.npmmirror.com/bullmq set size:611959 disposed:false
+20 silly fetch manifest ioredis@^5.4.1
+21 silly packumentCache full:https://registry.npmmirror.com/ioredis cache-miss
+22 http fetch GET 200 https://registry.npmmirror.com/ioredis 39ms (cache miss)
+23 silly packumentCache full:https://registry.npmmirror.com/ioredis set size:122470 disposed:false
+24 silly fetch manifest redis@^4.7.0
+25 silly packumentCache full:https://registry.npmmirror.com/redis cache-miss
+26 http fetch GET 200 https://registry.npmmirror.com/redis 63ms (cache miss)
+27 silly packumentCache full:https://registry.npmmirror.com/redis set size:73825 disposed:false
+28 silly fetch manifest node-fetch@^3.3.2
+29 silly packumentCache full:https://registry.npmmirror.com/node-fetch cache-miss
+30 http fetch GET 200 https://registry.npmmirror.com/node-fetch 28ms (cache miss)
+31 silly packumentCache full:https://registry.npmmirror.com/node-fetch set size:63386 disposed:false
+32 silly fetch manifest pino@^9.3.1
+33 silly packumentCache full:https://registry.npmmirror.com/pino cache-miss
+34 http fetch GET 200 https://registry.npmmirror.com/pino 50ms (cache miss)
+35 silly packumentCache full:https://registry.npmmirror.com/pino set size:153139 disposed:false
+36 silly fetch manifest zod@^3.23.8
+37 silly packumentCache full:https://registry.npmmirror.com/zod cache-miss
+38 http fetch GET 200 https://registry.npmmirror.com/zod 72ms (cache miss)
+39 silly packumentCache full:https://registry.npmmirror.com/zod set size:424625 disposed:false
+40 verbose stack Error: Unsupported URL Type "workspace:": workspace:^
+40 verbose stack     at unsupportedURLType (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-package-arg\lib\npa.js:310:15)
+40 verbose stack     at fromURL (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-package-arg\lib\npa.js:367:13)
+40 verbose stack     at Function.resolve (C:\Program Files\nodejs\node_modules\npm\node_modules\npm-package-arg\lib\npa.js:83:12)
+40 verbose stack     at #nodeFromEdge (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:1039:22)
+40 verbose stack     at #buildDepStep (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:904:35)
+40 verbose stack     at async Arborist.buildIdealTree (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\build-ideal-tree.js:181:7)
+40 verbose stack     at async Promise.all (index 1)
+40 verbose stack     at async Arborist.reify (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\arborist\reify.js:131:5)
+40 verbose stack     at async Install.exec (C:\Program Files\nodejs\node_modules\npm\lib\commands\install.js:150:5)
+40 verbose stack     at async Npm.exec (C:\Program Files\nodejs\node_modules\npm\lib\npm.js:207:9)
+41 error code EUNSUPPORTEDPROTOCOL
+42 error Unsupported URL Type "workspace:": workspace:^
+43 silly unfinished npm timer reify 1774329329626
+44 silly unfinished npm timer reify:loadTrees 1774329329633
+45 silly unfinished npm timer idealTree:buildDeps 1774329330287
+46 silly unfinished npm timer idealTree:apps/worker 1774329330310
+47 verbose cwd C:\Users\ljx10\Documents\develop\节点管理面板
+48 verbose os Windows_NT 10.0.26100
+49 verbose node v22.15.1
+50 verbose npm  v10.9.2
+51 verbose exit 1
+52 verbose code 1
+53 error A complete log of this run can be found in: C:\Users\ljx10\Documents\develop\节点管理面板\.npm-cache\_logs\2026-03-24T05_15_27_609Z-debug-0.log

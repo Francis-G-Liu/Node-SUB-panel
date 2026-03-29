@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@airport/sdk": ["packages/sdk/src/index.ts"],
+      "@airport/api-types": ["packages/sdk/src/types/index.ts"]
+    }
+  }
+}

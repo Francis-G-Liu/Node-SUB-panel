@@ -1,0 +1,139 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.9.2
+2 info using node@v22.15.1
+3 silly config load:file:C:\Program Files\nodejs\node_modules\npm\npmrc
+4 silly config load:file:C:\Users\ljx10\Documents\develop\节点管理面板\.npmrc
+5 silly config load:file:C:\Users\ljx10\.npmrc
+6 silly config load:file:C:\Users\ljx10\AppData\Roaming\npm\etc\npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" ".npm-cache"
+9 verbose logfile logs-max:10 dir:C:\Users\ljx10\Documents\develop\节点管理面板\.npm-cache\_logs\2026-03-24T05_09_46_132Z-
+10 verbose logfile C:\Users\ljx10\Documents\develop\节点管理面板\.npm-cache\_logs\2026-03-24T05_09_46_132Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4345298944 maxSize:1086324736 maxEntrySize:543162368
+13 silly idealTree buildDeps
+14 silly fetch manifest turbo@^2.0.5
+15 silly packumentCache full:https://registry.npmmirror.com/turbo cache-miss
+16 http fetch GET 200 https://registry.npmmirror.com/turbo 232ms (cache miss)
+17 silly packumentCache full:https://registry.npmmirror.com/turbo set size:453688 disposed:false
+18 silly fetch manifest typescript@^5.4.5
+19 silly packumentCache full:https://registry.npmmirror.com/typescript cache-miss
+20 http fetch GET 200 https://registry.npmmirror.com/typescript 161ms (cache miss)
+21 silly packumentCache full:https://registry.npmmirror.com/typescript set size:1684083 disposed:false
+22 silly placeDep ROOT turbo@2.8.20 OK for:  want: ^2.0.5
+23 silly placeDep ROOT typescript@5.9.3 OK for:  want: ^5.4.5
+24 silly fetch manifest @turbo/darwin-64@2.8.20
+25 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fdarwin-64 cache-miss
+26 silly fetch manifest @turbo/darwin-arm64@2.8.20
+27 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fdarwin-arm64 cache-miss
+28 silly fetch manifest @turbo/linux-64@2.8.20
+29 silly packumentCache full:https://registry.npmmirror.com/@turbo%2flinux-64 cache-miss
+30 silly fetch manifest @turbo/linux-arm64@2.8.20
+31 silly packumentCache full:https://registry.npmmirror.com/@turbo%2flinux-arm64 cache-miss
+32 silly fetch manifest @turbo/windows-64@2.8.20
+33 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fwindows-64 cache-miss
+34 silly fetch manifest @turbo/windows-arm64@2.8.20
+35 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fwindows-arm64 cache-miss
+36 http fetch GET 200 https://registry.npmmirror.com/@turbo%2fdarwin-64 66ms (cache miss)
+37 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fdarwin-64 set size:14199 disposed:false
+38 http fetch GET 200 https://registry.npmmirror.com/@turbo%2flinux-64 117ms (cache miss)
+39 silly packumentCache full:https://registry.npmmirror.com/@turbo%2flinux-64 set size:14566 disposed:false
+40 http fetch GET 200 https://registry.npmmirror.com/@turbo%2fwindows-arm64 119ms (cache miss)
+41 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fwindows-arm64 set size:14338 disposed:false
+42 http fetch GET 200 https://registry.npmmirror.com/@turbo%2fdarwin-arm64 122ms (cache miss)
+43 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fdarwin-arm64 set size:14092 disposed:false
+44 http fetch GET 200 https://registry.npmmirror.com/@turbo%2fwindows-64 140ms (cache miss)
+45 silly packumentCache full:https://registry.npmmirror.com/@turbo%2fwindows-64 set size:13866 disposed:false
+46 http fetch GET 200 https://registry.npmmirror.com/@turbo%2flinux-arm64 154ms (cache miss)
+47 silly packumentCache full:https://registry.npmmirror.com/@turbo%2flinux-arm64 set size:14549 disposed:false
+48 silly placeDep ROOT @turbo/darwin-64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+49 silly placeDep ROOT @turbo/darwin-arm64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+50 silly placeDep ROOT @turbo/linux-64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+51 silly placeDep ROOT @turbo/linux-arm64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+52 silly placeDep ROOT @turbo/windows-64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+53 silly placeDep ROOT @turbo/windows-arm64@2.8.20 OK for: turbo@2.8.20 want: 2.8.20
+54 silly reify moves {}
+55 silly audit bulk request {
+55 silly audit   turbo: [ '2.8.20' ],
+55 silly audit   typescript: [ '5.9.3' ],
+55 silly audit   '@turbo/darwin-64': [ '2.8.20' ],
+55 silly audit   '@turbo/darwin-arm64': [ '2.8.20' ],
+55 silly audit   '@turbo/linux-64': [ '2.8.20' ],
+55 silly audit   '@turbo/linux-arm64': [ '2.8.20' ],
+55 silly audit   '@turbo/windows-64': [ '2.8.20' ],
+55 silly audit   '@turbo/windows-arm64': [ '2.8.20' ]
+55 silly audit }
+56 verbose reify failed optional dependency C:\Users\ljx10\Documents\develop\节点管理面板\node_modules\@turbo\windows-arm64
+57 silly reify mark deleted [
+57 silly reify   'C:\\Users\\ljx10\\Documents\\develop\\节点管理面板\\node_modules\\@turbo\\windows-arm64'
+57 silly reify ]
+58 verbose reify failed optional dependency C:\Users\ljx10\Documents\develop\节点管理面板\node_modules\@turbo\linux-arm64
+59 silly reify mark deleted [
+59 silly reify   'C:\\Users\\ljx10\\Documents\\develop\\节点管理面板\\node_modules\\@turbo\\linux-arm64'
+59 silly reify ]
+60 verbose reify failed optional dependency C:\Users\ljx10\Documents\develop\节点管理面板\node_modules\@turbo\linux-64
+61 silly reify mark deleted [
+61 silly reify   'C:\\Users\\ljx10\\Documents\\develop\\节点管理面板\\node_modules\\@turbo\\linux-64'
+61 silly reify ]
+62 verbose reify failed optional dependency C:\Users\ljx10\Documents\develop\节点管理面板\node_modules\@turbo\darwin-arm64
+63 silly reify mark deleted [
+63 silly reify   'C:\\Users\\ljx10\\Documents\\develop\\节点管理面板\\node_modules\\@turbo\\darwin-arm64'
+63 silly reify ]
+64 verbose reify failed optional dependency C:\Users\ljx10\Documents\develop\节点管理面板\node_modules\@turbo\darwin-64
+65 silly reify mark deleted [
+65 silly reify   'C:\\Users\\ljx10\\Documents\\develop\\节点管理面板\\node_modules\\@turbo\\darwin-64'
+65 silly reify ]
+66 http cache turbo@https://registry.npmmirror.com/turbo/-/turbo-2.8.20.tgz 0ms (cache hit)
+67 http cache typescript@https://registry.npmmirror.com/typescript/-/typescript-5.9.3.tgz 0ms (cache hit)
+68 http cache @turbo/windows-64@https://registry.npmmirror.com/@turbo/windows-64/-/windows-64-2.8.20.tgz 0ms (cache hit)
+69 silly tarball no local data for turbo@https://registry.npmmirror.com/turbo/-/turbo-2.8.20.tgz. Extracting by manifest.
+70 silly tarball no local data for typescript@https://registry.npmmirror.com/typescript/-/typescript-5.9.3.tgz. Extracting by manifest.
+71 silly tarball no local data for @turbo/windows-64@https://registry.npmmirror.com/@turbo/windows-64/-/windows-64-2.8.20.tgz. Extracting by manifest.
+72 http fetch POST 404 https://registry.npmmirror.com/-/npm/v1/security/advisories/bulk 19ms
+73 silly audit bulk request failed [object Object]
+74 http fetch POST 404 https://registry.npmmirror.com/-/npm/v1/security/audits/quick 9ms
+75 verbose audit error HttpErrorGeneral: 404 Not Found - POST https://registry.npmmirror.com/-/npm/v1/security/audits/quick - [NOT_IMPLEMENTED] /-/npm/v1/security/* not implemented yet
+75 verbose audit error     at C:\Program Files\nodejs\node_modules\npm\node_modules\npm-registry-fetch\lib\check-response.js:103:15
+75 verbose audit error     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+75 verbose audit error     at async [getReport] (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\audit-report.js:336:21)
+75 verbose audit error     at async AuditReport.run (C:\Program Files\nodejs\node_modules\npm\node_modules\@npmcli\arborist\lib\audit-report.js:106:19) {
+75 verbose audit error   headers: [Object: null prototype] {
+75 verbose audit error     server: [ 'Tengine' ],
+75 verbose audit error     date: [ 'Tue, 24 Mar 2026 05:09:48 GMT' ],
+75 verbose audit error     'content-type': [ 'application/json' ],
+75 verbose audit error     'transfer-encoding': [ 'chunked' ],
+75 verbose audit error     connection: [ 'keep-alive' ],
+75 verbose audit error     'strict-transport-security': [ 'max-age=5184000' ],
+75 verbose audit error     via: [ 'kunlun5.cn5256[,404666]' ],
+75 verbose audit error     'timing-allow-origin': [ '*' ],
+75 verbose audit error     eagleid: [ '6f1f422317743289880365510e' ],
+75 verbose audit error     'x-fetch-attempts': [ '1' ]
+75 verbose audit error   },
+75 verbose audit error   statusCode: 404,
+75 verbose audit error   code: 'E404',
+75 verbose audit error   method: 'POST',
+75 verbose audit error   uri: 'https://registry.npmmirror.com/-/npm/v1/security/audits/quick',
+75 verbose audit error   body: {
+75 verbose audit error     error: '[NOT_IMPLEMENTED] /-/npm/v1/security/* not implemented yet'
+75 verbose audit error   },
+75 verbose audit error   pkgid: undefined
+75 verbose audit error }
+76 silly audit error [object Object]
+77 silly audit report null
+78 http fetch GET 200 https://cdn.npmmirror.com/packages/turbo/2.8.20/turbo-2.8.20.tgz 151ms (cache miss)
+79 http fetch GET 200 https://cdn.npmmirror.com/packages/%40turbo/windows-64/2.8.20/windows-64-2.8.20.tgz 1452ms (cache miss)
+80 http fetch GET 200 https://cdn.npmmirror.com/packages/typescript/5.9.3/typescript-5.9.3.tgz 1494ms (cache miss)
+81 silly ADD
+82 silly ADD node_modules/@turbo/windows-64
+83 silly ADD
+84 silly ADD
+85 silly ADD
+86 silly ADD
+87 silly ADD node_modules/typescript
+88 silly ADD node_modules/turbo
+89 verbose cwd C:\Users\ljx10\Documents\develop\节点管理面板
+90 verbose os Windows_NT 10.0.26100
+91 verbose node v22.15.1
+92 verbose npm  v10.9.2
+93 verbose exit 0
+94 info ok

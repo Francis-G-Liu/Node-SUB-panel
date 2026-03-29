@@ -1,0 +1,20 @@
+{
+  "name": "airport-panel",
+  "private": true,
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "clean": "powershell -Command \"Get-ChildItem -Path apps,packages -Include 'dist','.turbo' -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue; Remove-Item -Path .turbo -Force -Recurse -ErrorAction SilentlyContinue\"",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.5",
+    "typescript": "^5.4.5"
+  }
+}

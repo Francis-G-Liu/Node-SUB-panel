@@ -1,0 +1,39 @@
+.app-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 16px;
+}
+
+.app-content {
+  padding: 24px;
+  background: #0f172a;
+  min-height: calc(100vh - 64px);
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.chart-card {
+  background: #111c38;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.grid-gap {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .grid-three {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

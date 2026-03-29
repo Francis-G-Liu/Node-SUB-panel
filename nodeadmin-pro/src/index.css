@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  
+  --color-tag-success-bg: var(--tag-success-bg);
+  --color-tag-success-text: var(--tag-success-text);
+  --color-tag-success-border: var(--tag-success-border);
+  
+  --color-tag-warning-bg: var(--tag-warning-bg);
+  --color-tag-warning-text: var(--tag-warning-text);
+  --color-tag-warning-border: var(--tag-warning-border);
+  
+  --color-tag-danger-bg: var(--tag-danger-bg);
+  --color-tag-danger-text: var(--tag-danger-text);
+  --color-tag-danger-border: var(--tag-danger-border);
+  
+  --color-tag-info-bg: var(--tag-info-bg);
+  --color-tag-info-text: var(--tag-info-text);
+  --color-tag-info-border: var(--tag-info-border);
+  
+  --color-tag-default-bg: var(--tag-default-bg);
+  --color-tag-default-text: var(--tag-default-text);
+  --color-tag-default-border: var(--tag-default-border);
+}
+
+:root {
+  --background: #f3f4f6;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --border: #e2e8f0;
+  --muted: #f1f5f9;
+  --muted-foreground: #475569;
+  --accent: #0f172a;
+  --accent-foreground: #ffffff;
+
+  /* Tag Tokens - Light Mode - Improved Contrast */
+  --tag-success-bg: #dcfce7;
+  --tag-success-text: #166534;
+  --tag-success-border: #86efac;
+  
+  --tag-warning-bg: #fef3c7;
+  --tag-warning-text: #92400e;
+  --tag-warning-border: #fcd34d;
+  
+  --tag-danger-bg: #fee2e2;
+  --tag-danger-text: #991b1b;
+  --tag-danger-border: #fca5a5;
+  
+  --tag-info-bg: #e0f2fe;
+  --tag-info-text: #075985;
+  --tag-info-border: #7dd3fc;
+  
+  --tag-default-bg: #e2e8f0;
+  --tag-default-text: #1e293b;
+  --tag-default-border: #cbd5e1;
+}
+
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --card: #18181b;
+  --card-foreground: #fafafa;
+  --border: #27272a;
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+  --accent: #fafafa;
+  --accent-foreground: #18181b;
+
+  /* Tag Tokens - Dark Mode */
+  --tag-success-bg: rgba(6, 95, 70, 0.2);
+  --tag-success-text: #34d399;
+  --tag-success-border: rgba(52, 211, 153, 0.2);
+  
+  --tag-warning-bg: rgba(146, 64, 14, 0.2);
+  --tag-warning-text: #fbbf24;
+  --tag-warning-border: rgba(251, 191, 36, 0.2);
+  
+  --tag-danger-bg: rgba(153, 27, 27, 0.2);
+  --tag-danger-text: #f87171;
+  --tag-danger-border: rgba(248, 113, 113, 0.2);
+  
+  --tag-info-bg: rgba(7, 89, 133, 0.2);
+  --tag-info-text: #38bdf8;
+  --tag-info-border: rgba(56, 189, 248, 0.2);
+  
+  --tag-default-bg: rgba(39, 39, 42, 0.5);
+  --tag-default-text: #a1a1aa;
+  --tag-default-border: rgba(161, 161, 170, 0.2);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Smooth theme transition */
+*, *::before, *::after {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Prevent transitions on initial load if needed, but here we want them for theme toggle */
+.no-transition * {
+  transition: none !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-foreground);
+}

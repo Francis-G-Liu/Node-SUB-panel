@@ -1,0 +1,33 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type NodeModel {
+  hostname: String!
+  id: String!
+  latencyMs: Float
+  providerId: String!
+  region: String!
+  tags: [String!]!
+}
+
+type PlanModel {
+  bandwidthLimitGb: Int!
+  concurrentDevices: Int!
+  durationDays: Int!
+  id: String!
+  name: String!
+}
+
+type Query {
+  nodesSnapshot: [NodeModel!]!
+  openTickets: [TicketModel!]!
+  plansSnapshot: [PlanModel!]!
+}
+
+type TicketModel {
+  id: String!
+  priority: String!
+  status: String!
+  subject: String!
+}

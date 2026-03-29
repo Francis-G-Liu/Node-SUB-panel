@@ -1,0 +1,208 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum UserRole {
+  super_admin
+  ops
+  support
+  auditor
+  user
+}
+
+enum NodeProtocol {
+  vmess
+  vless
+  trojan
+  ss
+  socks
+  http
+}
+
+enum SubscriptionStatus {
+  active
+  expired
+  suspended
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum TicketStatus {
+  open
+  pending
+  resolved
+}
+
+enum TicketSender {
+  user
+  admin
+}
+
+enum AlertChannel {
+  telegram
+  email
+}
+
+enum AlertSeverity {
+  warning
+  critical
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  displayName       String
+  role              UserRole
+  passwordHash      String
+  apiToken          String?  @unique
+  refreshTokenHash  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  categoryId        String?
+  category          UserCategory? @relation(fields: [categoryId], references: [id])
+  subscriptions     Subscription[]
+  tickets           Ticket[]
+  messages          TicketMessage[]
+  auditLogs         AuditLog[]
+}
+
+model UserCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  isSystem    Boolean  @default(false)
+  baseRole    UserRole @default(user)
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Provider {
+  id                 String   @id @default(cuid())
+  name               String
+  regionHint         String
+  syncIntervalMinutes Int
+  lastSyncAt         DateTime?
+  subscriptionUrl    String
+  tags               Json
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  nodes              Node[]
+}
+
+model Node {
+  id               String   @id @default(cuid())
+  providerId       String
+  provider         Provider @relation(fields: [providerId], references: [id])
+  hostname         String
+  port             Int
+  protocol         NodeProtocol
+  region           String
+  tags             Json
+  maxBandwidthMbps Int?
+  online           Boolean  @default(false)
+  active           Boolean  @default(true)
+  lastCheckedAt    DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  telemetrySamples TelemetrySample[]
+
+  @@unique([providerId, hostname, port, protocol])
+}
+
+model Plan {
+  id                String   @id @default(cuid())
+  name              String
+  bandwidthLimitGb  Int
+  durationDays      Int
+  concurrentDevices Int
+  regionFilters     Json
+  nodeTags          Json
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  subscriptions     Subscription[]
+}
+
+model Subscription {
+  id         String             @id @default(cuid())
+  userId     String
+  planId     String
+  status     SubscriptionStatus
+  usageGb    Float
+  resetDay   Int
+  expiresAt  DateTime
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+  user       User               @relation(fields: [userId], references: [id])
+  plan       Plan               @relation(fields: [planId], references: [id])
+}
+
+model Ticket {
+  id        String         @id @default(cuid())
+  userId    String
+  subject   String
+  priority  TicketPriority
+  status    TicketStatus
+  nodeId    String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  user      User           @relation(fields: [userId], references: [id])
+  messages  TicketMessage[]
+}
+
+model TicketMessage {
+  id        String       @id @default(cuid())
+  ticketId  String
+  sender    TicketSender
+  body      String
+  createdAt DateTime     @default(now())
+  userId    String?
+  ticket    Ticket       @relation(fields: [ticketId], references: [id])
+  user      User?        @relation(fields: [userId], references: [id])
+}
+
+model AlertRule {
+  id                   String        @id @default(cuid())
+  name                 String
+  channel              AlertChannel
+  severity             AlertSeverity
+  target               String
+  regionFilter         String?
+  tagFilter            String?
+  thresholdLatencyMs   Int?
+  thresholdPacketLoss  Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model TelemetrySample {
+  id         String   @id @default(cuid())
+  nodeId     String
+  latencyMs  Int?
+  packetLoss Float
+  timestamp  DateTime
+  createdAt  DateTime @default(now())
+  node       Node     @relation(fields: [nodeId], references: [id])
+
+  @@index([nodeId, timestamp])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  targetType String
+  targetId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+}
