@@ -1,40 +1,40 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { nanoid } from 'nanoid';
 
 export type UserRole = 'super_admin' | 'ops' | 'support' | 'auditor' | 'user';
 
 interface AuthState {
-  adminToken: string;
-  userToken: string;
-  adminEmail: string;
-  adminName: string;
+  accessToken: string;
+  email: string;
+  nickname: string;
   userRole: UserRole | null;
-  rotateTokens: () => void;
-  loginAdmin: (token: string, email?: string, name?: string, role?: UserRole) => void;
+  login: (token: string, email?: string, nickname?: string, role?: UserRole) => void;
   logout: () => void;
 }
 
-const defaultAdminToken = '';
-const defaultUserToken = '';
+const defaultAccessToken = '';
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      adminToken: defaultAdminToken,
-      userToken: defaultUserToken,
-      adminEmail: '',
-      adminName: '',
+      accessToken: defaultAccessToken,
+      email: '',
+      nickname: '',
       userRole: null,
-      rotateTokens: () =>
-        set(() => ({
-          adminToken: `${defaultAdminToken}-${nanoid(6)}`,
-          userToken: `${defaultUserToken}-${nanoid(6)}`,
-        })),
-      loginAdmin: (token: string, email?: string, name?: string, role?: UserRole) =>
-        set({ adminToken: token, adminEmail: email ?? '', adminName: name ?? '', userRole: role ?? null }),
+      login: (token: string, email?: string, nickname?: string, role?: UserRole) =>
+        set({ 
+          accessToken: token, 
+          email: email ?? '', 
+          nickname: nickname ?? '', 
+          userRole: role ?? null 
+        }),
       logout: () =>
-        set({ adminToken: '', adminEmail: '', adminName: '', userRole: null }),
+        set({ 
+          accessToken: '', 
+          email: '', 
+          nickname: '', 
+          userRole: null 
+        }),
     }),
     {
       name: 'nodeadmin-auth-storage',

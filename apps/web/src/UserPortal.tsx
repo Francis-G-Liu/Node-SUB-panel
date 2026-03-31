@@ -5,7 +5,6 @@ import {
   Server,
   CreditCard,
   Ticket as TicketIcon,
-
   ChevronRight,
   RefreshCw,
   Copy,
@@ -41,102 +40,10 @@ import { Toaster, toast } from 'sonner';
 import { cn } from './lib/utils';
 import { useAuthStore } from './store/auth';
 import type { Node, Plan, Subscription, Ticket } from './types';
+import { Card, Badge, Modal, BrandLogo } from './components/UI';
+import { buildApiUrl } from './lib/api';
 
-// --- Brand Logo ---
-const BrandLogo = ({ size = 36, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className}>
-    <defs>
-      <linearGradient id="brandGradUser" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#2563eb" />
-        <stop offset="100%" stopColor="#7c3aed" />
-      </linearGradient>
-    </defs>
-    <rect width="36" height="36" rx="10" fill="url(#brandGradUser)" />
-    <circle cx="12" cy="12" r="2.5" fill="white" />
-    <circle cx="24" cy="12" r="2.5" fill="white" />
-    <circle cx="12" cy="24" r="2.5" fill="white" />
-    <circle cx="24" cy="24" r="2.5" fill="white" />
-    <line x1="14.5" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="12" y1="14.5" x2="12" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="24" y1="14.5" x2="24" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="14.5" y1="24" x2="21.5" y2="24" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="14" y1="14" x2="22" y2="22" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
-  </svg>
-);
-
-// --- Shared Components (reuse same design tokens as admin) ---
-
-const Card = ({ children, className, ...props }: { children: React.ReactNode; className?: string; [key: string]: any }) => (
-  <div
-    className={cn(
-      'bg-card text-card-foreground border border-slate-200/60 dark:border-slate-800/50 rounded-xl overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-all duration-300',
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </div>
-);
-
-const Badge = ({
-  children,
-  variant = 'default',
-}: {
-  children: React.ReactNode;
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
-}) => {
-  const variants = {
-    default: 'bg-tag-default-bg text-tag-default-text border-tag-default-border',
-    success: 'bg-tag-success-bg text-tag-success-text border-tag-success-border',
-    warning: 'bg-tag-warning-bg text-tag-warning-text border-tag-warning-border',
-    danger: 'bg-tag-danger-bg text-tag-danger-text border-tag-danger-border',
-    info: 'bg-tag-info-bg text-tag-info-text border-tag-info-border',
-  };
-  return (
-    <span
-      className={cn(
-        'px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border flex items-center justify-center w-fit',
-        variants[variant]
-      )}
-    >
-      {children}
-    </span>
-  );
-};
-
-const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean; onClose: () => void; title: string; children: React.ReactNode }) => (
-  <AnimatePresence>
-    {isOpen && (
-      <>
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
-        />
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[85%] md:max-w-lg lg:max-w-2xl bg-card border border-border dark:border-slate-700/30 rounded-2xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] z-[51] flex flex-col max-h-[90vh] overflow-hidden"
-        >
-          <div className="px-6 py-4 border-b border-border dark:border-slate-700/30 flex items-center justify-between shrink-0 bg-card/50 backdrop-blur-sm">
-            <h3 className="font-bold text-lg text-foreground">{title}</h3>
-            <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all hover:rotate-90 duration-300">
-              <X size={20} className="text-muted-foreground" />
-            </button>
-          </div>
-          <div className="p-4 md:p-6 overflow-y-auto flex-1 custom-scrollbar bg-card">{children}</div>
-        </motion.div>
-      </>
-    )}
-  </AnimatePresence>
-);
-
-// --- API helper ---
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-const buildApiUrl = (path: string) => `${apiBaseUrl}${path}`;
+// --- API helper is now imported from ./lib/api ---
 
 // --- Circular Progress ---
 const CircularProgress = ({ percentage, size = 160, strokeWidth = 12, color = '#10b981' }: { percentage: number; size?: number; strokeWidth?: number; color?: string }) => {
@@ -197,13 +104,13 @@ const UserDashboardView = ({
   nodes,
   plans,
   onRefresh,
-  apiRequest,
+  accessToken,
 }: {
   subscriptions: Subscription[];
   nodes: Node[];
   plans: Plan[];
   onRefresh: () => void;
-  apiRequest?: (path: string, options?: RequestInit) => Promise<any>;
+  accessToken: string;
 }) => {
   const activeSub = subscriptions.find((s) => s.status === 'Active');
   const usagePercent = activeSub ? Math.round((activeSub.used / activeSub.total) * 100) : 0;
@@ -324,9 +231,9 @@ const UserDashboardView = ({
               <div>
                 <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">快速订阅</p>
                 <div className="space-y-2">
-                  <CopyButton text={`${window.location.origin}/api/subscribe/clash?token=user-token`} label="Clash 订阅链接" />
-                  <CopyButton text={`${window.location.origin}/api/subscribe/v2ray?token=user-token`} label="V2Ray 订阅链接" />
-                  <CopyButton text={`${window.location.origin}/api/subscribe/quantumult?token=user-token`} label="QuantumultX 订阅链接" />
+                  <CopyButton text={`${window.location.origin}/api/subscribe/clash?token=${encodeURIComponent(accessToken)}`} label="Clash 订阅链接" />
+                  <CopyButton text={`${window.location.origin}/api/subscribe/v2ray?token=${encodeURIComponent(accessToken)}`} label="V2Ray 订阅链接" />
+                  <CopyButton text={`${window.location.origin}/api/subscribe/quantumult?token=${encodeURIComponent(accessToken)}`} label="QuantumultX 订阅链接" />
                 </div>
               </div>
 
@@ -823,7 +730,7 @@ const UserTicketsView = ({
 // ========================================
 export default function UserPortal() {
   const { i18n } = useTranslation();
-  const { adminToken, logout, adminEmail, adminName } = useAuthStore();
+  const { accessToken, logout, email, nickname } = useAuthStore();
   const [activeView, setActiveView] = useState('dashboard');
   const [darkMode, setDarkMode] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -839,8 +746,8 @@ export default function UserPortal() {
     if (!headers.has('Content-Type') && options.body) {
       headers.set('Content-Type', 'application/json');
     }
-    if (adminToken) {
-      headers.set('Authorization', `Bearer ${adminToken}`);
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
     }
     const res = await fetch(buildApiUrl(path), { ...options, headers });
     if (!res.ok) {
@@ -926,9 +833,9 @@ export default function UserPortal() {
   };
 
   useEffect(() => {
-    if (!adminToken) return;
+    if (!accessToken) return;
     fetchData();
-  }, [adminToken]);
+  }, [accessToken]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -1015,12 +922,12 @@ export default function UserPortal() {
         <div className={cn('p-4 border-t border-border dark:border-none mt-auto shrink-0 transition-all', !sidebarOpen && 'px-2')}>
           <div className={cn('flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors duration-300 overflow-hidden', !sidebarOpen && 'justify-center')}>
             <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-xs font-bold text-white transition-colors duration-300 shrink-0 shadow-md shadow-blue-600/20">
-              {(adminName || adminEmail || 'U').charAt(0).toUpperCase()}
+              {(nickname || email || 'U').charAt(0).toUpperCase()}
             </div>
             {sidebarOpen && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex-1 min-w-0">
-                <p className="text-xs font-bold truncate">{adminName || 'User'}</p>
-                <p className="text-[10px] text-muted-foreground truncate">{adminEmail}</p>
+                <p className="text-xs font-bold truncate">{nickname || 'User'}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{email}</p>
               </motion.div>
             )}
             {sidebarOpen && (
@@ -1068,7 +975,7 @@ export default function UserPortal() {
             <AnimatePresence mode="wait">
               <motion.div key={activeView} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
                 {activeView === 'dashboard' && (
-                  <UserDashboardView subscriptions={subscriptions} nodes={nodes} plans={plans} onRefresh={fetchData} apiRequest={apiRequest} />
+                  <UserDashboardView subscriptions={subscriptions} nodes={nodes} plans={plans} onRefresh={fetchData} accessToken={accessToken} />
                 )}
                 {activeView === 'nodes' && <UserNodesView nodes={nodes} />}
                 {activeView === 'store' && <UserStoreView plans={plans} currentPlan={activeSub?.plan} />}

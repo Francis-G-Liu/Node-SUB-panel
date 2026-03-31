@@ -14,17 +14,14 @@ import {
   Plus, 
   Search, 
   ChevronRight, 
-  Activity, 
+  Activity,
   ShieldAlert,
-  ArrowUpRight,
-  ArrowDownRight,
   MoreVertical,
-  Filter,
-  CheckCircle2,
-  XCircle,
-  Clock,
-  ExternalLink,
-  Edit,
+  Filter, 
+  CheckCircle2, 
+  XCircle, 
+  Clock, 
+  Edit, 
   Trash2,
   Lock,
   Unlock,
@@ -41,8 +38,6 @@ import {
   LogIn
 } from 'lucide-react';
 import { 
-  LineChart, 
-  Line, 
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -62,127 +57,11 @@ import { useAuthStore, type UserRole } from './store/auth';
 import type { 
   Node, Provider, Plan, Subscription, Ticket, Alert, User, AuditLog, Stats 
 } from './types';
+import { Card, Badge, Modal, StatCard, BrandLogo } from './components/UI';
+import { buildApiUrl } from './lib/api';
 
-// --- Components ---
 
-const Card = ({ children, className, ...props }: { children: React.ReactNode, className?: string, [key: string]: any }) => (
-  <div className={cn("bg-card text-card-foreground border border-slate-200/60 dark:border-slate-800/50 rounded-xl overflow-hidden shadow-sm dark:shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-all duration-300", className)} {...props}>
-    {children}
-  </div>
-);
-
-const StatCard = ({ title, value, icon: Icon, trend, color, iconColor }: any) => {
-  const { t } = useTranslation();
-  return (
-    <Card className="p-4 sm:p-6 transition-all duration-300 hover:shadow-md hover:translate-y-[-2px]">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{title}</p>
-          <h3 className="text-2xl font-black tracking-tight">{value}</h3>
-          {trend && (
-            <div className={cn("flex items-center mt-2 text-xs font-bold", trend > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400")}>
-              {trend > 0 ? <ArrowUpRight size={14} className="mr-0.5" /> : <ArrowDownRight size={14} className="mr-0.5" />}
-              {Math.abs(trend)}% {trend > 0 ? 'increase' : 'decrease'}
-            </div>
-          )}
-        </div>
-        <div className={cn("p-4 rounded-2xl transition-all duration-300 shadow-sm shadow-black/5", color)}>
-          <Icon size={26} className={iconColor} />
-        </div>
-      </div>
-    </Card>
-  );
-};
-
-const Badge = ({ children, variant = 'default', hierarchy = 'secondary', ...props }: { children: React.ReactNode, variant?: 'default' | 'success' | 'warning' | 'danger' | 'info', hierarchy?: 'primary' | 'secondary', [key: string]: any }) => {
-  const variants = {
-    default: {
-      primary: 'bg-tag-default-text text-white border-tag-default-text dark:bg-tag-default-text dark:text-tag-default-bg shadow-sm',
-      secondary: 'bg-tag-default-bg text-tag-default-text border-tag-default-border'
-    },
-    success: {
-      primary: 'bg-emerald-600 text-white border-emerald-600 dark:bg-emerald-500 dark:text-emerald-950 dark:border-emerald-500 shadow-sm',
-      secondary: 'bg-tag-success-bg text-tag-success-text border-tag-success-border'
-    },
-    warning: {
-      primary: 'bg-amber-500 text-amber-950 border-amber-500 dark:bg-amber-400 dark:text-amber-950 dark:border-amber-400 shadow-sm',
-      secondary: 'bg-tag-warning-bg text-tag-warning-text border-tag-warning-border'
-    },
-    danger: {
-      primary: 'bg-rose-600 text-white border-rose-600 dark:bg-rose-500 dark:text-rose-950 dark:border-rose-500 shadow-sm',
-      secondary: 'bg-tag-danger-bg text-tag-danger-text border-tag-danger-border'
-    },
-    info: {
-      primary: 'bg-sky-600 text-white border-sky-600 dark:bg-sky-500 dark:text-sky-950 dark:border-sky-500 shadow-sm',
-      secondary: 'bg-tag-info-bg text-tag-info-text border-tag-info-border'
-    },
-  };
-  return (
-    <span className={cn(
-      "px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border",
-      "hover:brightness-95 active:scale-95 cursor-default flex items-center justify-center w-fit",
-      variants[variant][hierarchy]
-    )}>
-      {children}
-    </span>
-  );
-};
-
-const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean, onClose: () => void, title: string, children: React.ReactNode }) => {
-  return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex items-center justify-center p-4 transition-all"
-          />
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] sm:w-[85%] md:max-w-lg lg:max-w-2xl bg-card border border-border dark:border-slate-700/30 rounded-2xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)] z-[51] flex flex-col max-h-[90vh] overflow-hidden"
-          >
-            <div className="px-6 py-4 border-b border-border dark:border-slate-700/30 flex items-center justify-between shrink-0 bg-card/50 backdrop-blur-sm">
-              <h3 className="font-bold text-lg text-foreground">{title}</h3>
-              <button onClick={onClose} className="p-2 hover:bg-muted rounded-xl transition-all hover:rotate-90 duration-300">
-                <X size={20} className="text-muted-foreground" />
-              </button>
-            </div>
-            <div className="p-4 md:p-6 overflow-y-auto flex-1 custom-scrollbar bg-card">
-              {children}
-            </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
-  );
-};
-
-const BrandLogo = ({ size = 36, className = '' }: { size?: number; className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className}>
-    <defs>
-      <linearGradient id="brandGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#2563eb" />
-        <stop offset="100%" stopColor="#7c3aed" />
-      </linearGradient>
-    </defs>
-    <rect width="36" height="36" rx="10" fill="url(#brandGrad)" />
-    {/* Node network: 4 nodes + connecting lines */}
-    <circle cx="12" cy="12" r="2.5" fill="white" />
-    <circle cx="24" cy="12" r="2.5" fill="white" />
-    <circle cx="12" cy="24" r="2.5" fill="white" />
-    <circle cx="24" cy="24" r="2.5" fill="white" />
-    <line x1="14.5" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="12" y1="14.5" x2="12" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="24" y1="14.5" x2="24" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="14.5" y1="24" x2="21.5" y2="24" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-    <line x1="14" y1="14" x2="22" y2="22" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
-  </svg>
-);
+// --- Views ---
 
 const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handleLogin }: any) => {
   const { t } = useTranslation();
@@ -787,8 +666,6 @@ const ProvidersView = ({ providers, onAction }: { providers: Provider[], onActio
   );
 };
 
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
-const buildApiUrl = (path: string) => `${apiBaseUrl}${path}`;
 
 const NodesView = ({ nodes, onAction, token }: { nodes: Node[], onAction: any, token: string }) => {
   const { t } = useTranslation();
@@ -2263,8 +2140,8 @@ const AuditLogsView = ({ logs }: { logs: AuditLog[] }) => {
 
 export default function App() {
   const { t, i18n } = useTranslation();
-  const { adminToken, loginAdmin, logout, adminEmail, userRole } = useAuthStore();
-  const [email, setEmail] = useState('');
+  const { accessToken, login, logout, email: userEmail, nickname, userRole } = useAuthStore();
+  const [loginEmail, setLoginEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [activeView, setActiveView] = useState('dashboard');
@@ -2288,8 +2165,8 @@ export default function App() {
     if (!headers.has('Content-Type') && options.body) {
       headers.set('Content-Type', 'application/json');
     }
-    if (adminToken) {
-      headers.set('Authorization', `Bearer ${adminToken}`);
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
     }
     const res = await fetch(buildApiUrl(path), { ...options, headers });
     if (!res.ok) {
@@ -2307,12 +2184,12 @@ export default function App() {
       const result = await fetch(buildApiUrl('/api/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: email, password }),
+        body: JSON.stringify({ username: loginEmail, password }),
       });
       if (!result.ok) throw new Error('login_failed');
       const data = await result.json();
       const role = (data.user?.role ?? 'user') as UserRole;
-      loginAdmin(data.accessToken, email, data.user?.nickname ?? email, role);
+      login(data.accessToken, loginEmail, data.user?.nickname ?? loginEmail, role);
       toast.success('登录成功');
     } catch {
       toast.error('登录失败');
@@ -2557,10 +2434,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (!adminToken) return;
+    if (!accessToken) return;
     fetchData();
 
-    const nodeEvt = new EventSource(buildApiUrl(`/api/stream/nodes?token=${encodeURIComponent(adminToken)}`));
+    const nodeEvt = new EventSource(buildApiUrl(`/api/stream/nodes?token=${encodeURIComponent(accessToken)}`));
     nodeEvt.onmessage = (e) => {
       const data = JSON.parse(e.data);
       const payload = data?.payload ?? data;
@@ -2574,7 +2451,7 @@ export default function App() {
       ].slice(0, 20));
     };
 
-    const alertEvt = new EventSource(buildApiUrl(`/api/stream/alerts?token=${encodeURIComponent(adminToken)}`));
+    const alertEvt = new EventSource(buildApiUrl(`/api/stream/alerts?token=${encodeURIComponent(accessToken)}`));
     alertEvt.onmessage = (e) => {
       const data = JSON.parse(e.data);
       const payload = data?.payload ?? data;
@@ -2592,7 +2469,7 @@ export default function App() {
       nodeEvt.close();
       alertEvt.close();
     };
-  }, [adminToken]);
+  }, [accessToken]);
 
   const navItems = [
     { id: 'dashboard', label: t('dashboard'), icon: LayoutDashboard },
@@ -2605,13 +2482,13 @@ export default function App() {
     { id: 'audit', label: t('audit'), icon: History },
   ];
 
-  if (!adminToken) {
+  if (!accessToken) {
     return (
       <>
         <Toaster position="top-right" richColors />
         <LoginView 
-          email={email} 
-          setEmail={setEmail} 
+          email={loginEmail} 
+          setEmail={setLoginEmail} 
           password={password} 
           setPassword={setPassword} 
           isLoggingIn={isLoggingIn} 
@@ -2652,7 +2529,7 @@ export default function App() {
           sidebarOpen ? "justify-between" : "justify-center px-0"
         )}>
           <div className="flex items-center gap-3 shrink-0">
-            <BrandLogo size={36} className="shrink-0" />
+            <BrandLogo size={36} className="shrink-0" showBadge />
             {sidebarOpen && (
               <motion.h1 
                 initial={{ opacity: 0, x: -10 }}
@@ -2720,8 +2597,8 @@ export default function App() {
                 animate={{ opacity: 1 }}
                 className="flex-1 min-w-0"
               >
-                <p className="text-xs font-bold truncate">Admin</p>
-                <p className="text-[10px] text-muted-foreground truncate">{adminEmail || email}</p>
+                <p className="text-xs font-bold truncate">{nickname || 'Admin'}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{userEmail}</p>
               </motion.div>
             )}
             {sidebarOpen && (
@@ -2789,7 +2666,7 @@ export default function App() {
               >
                 {activeView === 'dashboard' && <DashboardView stats={stats} nodeStream={nodeStream} alertStream={alertStream} onRefresh={fetchData} />}
                 {activeView === 'providers' && <ProvidersView providers={providers} onAction={handleAction} />}
-                {activeView === 'nodes' && <NodesView nodes={nodes} onAction={handleAction} token={adminToken} />}
+                {activeView === 'nodes' && <NodesView nodes={nodes} onAction={handleAction} token={accessToken} />}
                 {activeView === 'plans' && <PlansView plans={plans} subscriptions={subscriptions} onAction={handleAction} />}
                 {activeView === 'tickets' && <TicketsView tickets={tickets} onAction={handleAction} />}
                 {activeView === 'alerts' && <AlertsView alerts={alerts} onAction={handleAction} />}
