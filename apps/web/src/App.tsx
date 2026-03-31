@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import UserPortal from './UserPortal';
 import { useTranslation } from 'react-i18next';
 import { 
   LayoutDashboard, 
@@ -54,7 +55,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
 import yaml from 'js-yaml';
 import { cn } from './lib/utils';
-import { useAuthStore } from './store/auth';
+import { useAuthStore, type UserRole } from './store/auth';
 import type { 
   Node, Provider, Plan, Subscription, Ticket, Alert, User, AuditLog, Stats 
 } from './types';
@@ -2248,7 +2249,7 @@ const AuditLogsView = ({ logs }: { logs: AuditLog[] }) => {
 
 export default function App() {
   const { t, i18n } = useTranslation();
-  const { adminToken, loginAdmin, logout, adminEmail } = useAuthStore();
+  const { adminToken, loginAdmin, logout, adminEmail, userRole } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
@@ -2296,7 +2297,8 @@ export default function App() {
       });
       if (!result.ok) throw new Error('login_failed');
       const data = await result.json();
-      loginAdmin(data.accessToken, email, email);
+      const role = (data.user?.role ?? 'user') as UserRole;
+      loginAdmin(data.accessToken, email, data.user?.nickname ?? email, role);
       toast.success('登录成功');
     } catch {
       toast.error('登录失败');
@@ -2603,6 +2605,11 @@ export default function App() {
         />
       </>
     );
+  }
+
+  // Route regular users to their dedicated portal
+  if (userRole === 'user') {
+    return <UserPortal />;
   }
 
   return (

@@ -35,6 +35,7 @@ export class TicketsService {
   listForUser(userId: string) {
     return this.prisma.ticket.findMany({
       where: { userId },
+      include: { messages: true },
       orderBy: { updatedAt: 'desc' },
     });
   }
@@ -89,6 +90,24 @@ export class TicketsService {
         sender: 'admin',
         body: payload.body,
         userId: payload.userId,
+      },
+    });
+  }
+
+  async replyTicketAsUser(ticketId: string, userId: string, body: string) {
+    // Verify the ticket belongs to the user
+    const ticket = await this.prisma.ticket.findFirst({
+      where: { id: ticketId, userId },
+    });
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    return this.prisma.ticketMessage.create({
+      data: {
+        ticketId,
+        sender: 'user',
+        body,
+        userId,
       },
     });
   }

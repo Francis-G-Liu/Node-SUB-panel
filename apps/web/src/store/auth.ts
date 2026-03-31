@@ -2,13 +2,16 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
 
+export type UserRole = 'super_admin' | 'ops' | 'support' | 'auditor' | 'user';
+
 interface AuthState {
   adminToken: string;
   userToken: string;
   adminEmail: string;
   adminName: string;
+  userRole: UserRole | null;
   rotateTokens: () => void;
-  loginAdmin: (token: string, email?: string, name?: string) => void;
+  loginAdmin: (token: string, email?: string, name?: string, role?: UserRole) => void;
   logout: () => void;
 }
 
@@ -22,18 +25,19 @@ export const useAuthStore = create<AuthState>()(
       userToken: defaultUserToken,
       adminEmail: '',
       adminName: '',
+      userRole: null,
       rotateTokens: () =>
         set(() => ({
           adminToken: `${defaultAdminToken}-${nanoid(6)}`,
           userToken: `${defaultUserToken}-${nanoid(6)}`,
         })),
-      loginAdmin: (token: string, email?: string, name?: string) => 
-        set({ adminToken: token, adminEmail: email ?? '', adminName: name ?? '' }),
-      logout: () => 
-        set({ adminToken: '', adminEmail: '', adminName: '' }),
+      loginAdmin: (token: string, email?: string, name?: string, role?: UserRole) =>
+        set({ adminToken: token, adminEmail: email ?? '', adminName: name ?? '', userRole: role ?? null }),
+      logout: () =>
+        set({ adminToken: '', adminEmail: '', adminName: '', userRole: null }),
     }),
     {
-      name: 'nodeadmin-auth-storage', // name of the item in the storage (must be unique)
+      name: 'nodeadmin-auth-storage',
     }
   )
 );

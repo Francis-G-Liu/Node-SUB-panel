@@ -36,6 +36,7 @@ let TicketsService = class TicketsService {
     listForUser(userId) {
         return this.prisma.ticket.findMany({
             where: { userId },
+            include: { messages: true },
             orderBy: { updatedAt: 'desc' },
         });
     }
@@ -73,6 +74,22 @@ let TicketsService = class TicketsService {
                 sender: 'admin',
                 body: payload.body,
                 userId: payload.userId,
+            },
+        });
+    }
+    async replyTicketAsUser(ticketId, userId, body) {
+        const ticket = await this.prisma.ticket.findFirst({
+            where: { id: ticketId, userId },
+        });
+        if (!ticket) {
+            throw new Error('Ticket not found');
+        }
+        return this.prisma.ticketMessage.create({
+            data: {
+                ticketId,
+                sender: 'user',
+                body,
+                userId,
             },
         });
     }

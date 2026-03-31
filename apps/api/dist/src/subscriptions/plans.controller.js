@@ -73,7 +73,7 @@ __decorate([
 ], PlansController.prototype, "remove", null);
 exports.PlansController = PlansController = __decorate([
     (0, common_1.Controller)('plans'),
-    (0, roles_decorator_1.Roles)('super_admin', 'ops', 'support'),
+    (0, roles_decorator_1.Roles)('super_admin', 'ops', 'support', 'user'),
     __metadata("design:paramtypes", [subscriptions_service_1.SubscriptionsService])
 ], PlansController);
 //# sourceMappingURL=plans.controller.js.map

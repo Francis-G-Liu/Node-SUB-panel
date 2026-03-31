@@ -11,7 +11,7 @@ import { SubscriptionsService } from './subscriptions.service';
 import { Roles } from '../auth/roles.decorator';
 
 @Controller('plans')
-@Roles('super_admin', 'ops', 'support')
+@Roles('super_admin', 'ops', 'support', 'user')
 export class PlansController {
   constructor(private readonly subscriptionsService: SubscriptionsService) { }
 

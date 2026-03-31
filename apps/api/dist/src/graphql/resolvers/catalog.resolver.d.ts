@@ -28,20 +28,20 @@ export declare class CatalogResolver {
     openTickets(): Promise<({
         messages: {
             id: string;
-            createdAt: Date;
             userId: string | null;
-            sender: import("@prisma/client").$Enums.TicketSender;
+            createdAt: Date;
             ticketId: string;
+            sender: import("@prisma/client").$Enums.TicketSender;
             body: string;
         }[];
     } & {
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         status: import("@prisma/client").$Enums.TicketStatus;
+        id: string;
         userId: string;
         subject: string;
         priority: import("@prisma/client").$Enums.TicketPriority;
         nodeId: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     })[]>;
 }
