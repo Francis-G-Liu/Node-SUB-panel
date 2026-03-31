@@ -10,27 +10,8 @@ import {
 } from '@nestjs/common';
 import { NodesService } from './nodes.service';
 import { Roles } from '../auth/roles.decorator';
-
-interface CreateNodeBody {
-  providerId?: string;
-  hostname: string;
-  port: number | string;
-  protocol: 'vmess' | 'vless' | 'trojan' | 'ss' | 'socks' | 'http';
-  region: string;
-  tags?: string[];
-  active?: boolean;
-  maxBandwidthMbps?: number;
-}
-
-interface UpdateNodeBody {
-  hostname?: string;
-  port?: number | string;
-  protocol?: 'vmess' | 'vless' | 'trojan' | 'ss' | 'socks' | 'http';
-  region?: string;
-  tags?: string[];
-  active?: boolean;
-  maxBandwidthMbps?: number | null;
-}
+import { CreateNodeDto } from './dto/create-node.dto';
+import { UpdateNodeDto } from './dto/update-node.dto';
 
 @Controller('nodes')
 @Roles('super_admin', 'ops', 'support', 'auditor')
@@ -95,13 +76,13 @@ export class NodesAdminController {
 
   @Post()
   @Roles('super_admin', 'ops')
-  create(@Body() body: CreateNodeBody) {
+  create(@Body() body: CreateNodeDto) {
     return this.nodesService.create({
       providerId: body.providerId,
-      hostname: body.hostname,
-      port: Number(body.port),
+      hostname: body.hostname.trim(),
+      port: body.port,
       protocol: body.protocol,
-      region: body.region,
+      region: body.region.trim(),
       tags: body.tags ?? [],
       active: body.active,
       maxBandwidthMbps: body.maxBandwidthMbps,
@@ -110,12 +91,12 @@ export class NodesAdminController {
 
   @Patch(':id')
   @Roles('super_admin', 'ops')
-  update(@Param('id') id: string, @Body() body: UpdateNodeBody) {
+  update(@Param('id') id: string, @Body() body: UpdateNodeDto) {
     return this.nodesService.update(id, {
-      hostname: body.hostname,
-      port: body.port !== undefined ? Number(body.port) : undefined,
+      hostname: body.hostname?.trim(),
+      port: body.port,
       protocol: body.protocol,
-      region: body.region,
+      region: body.region?.trim(),
       tags: body.tags,
       active: body.active,
       maxBandwidthMbps: body.maxBandwidthMbps,

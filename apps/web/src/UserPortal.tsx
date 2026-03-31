@@ -5,7 +5,7 @@ import {
   Server,
   CreditCard,
   Ticket as TicketIcon,
-  Activity,
+
   ChevronRight,
   RefreshCw,
   Copy,
@@ -41,6 +41,28 @@ import { Toaster, toast } from 'sonner';
 import { cn } from './lib/utils';
 import { useAuthStore } from './store/auth';
 import type { Node, Plan, Subscription, Ticket } from './types';
+
+// --- Brand Logo ---
+const BrandLogo = ({ size = 36, className = '' }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className}>
+    <defs>
+      <linearGradient id="brandGradUser" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#2563eb" />
+        <stop offset="100%" stopColor="#7c3aed" />
+      </linearGradient>
+    </defs>
+    <rect width="36" height="36" rx="10" fill="url(#brandGradUser)" />
+    <circle cx="12" cy="12" r="2.5" fill="white" />
+    <circle cx="24" cy="12" r="2.5" fill="white" />
+    <circle cx="12" cy="24" r="2.5" fill="white" />
+    <circle cx="24" cy="24" r="2.5" fill="white" />
+    <line x1="14.5" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="12" y1="14.5" x2="12" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="24" y1="14.5" x2="24" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="14.5" y1="24" x2="21.5" y2="24" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="14" y1="14" x2="22" y2="22" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+  </svg>
+);
 
 // --- Shared Components (reuse same design tokens as admin) ---
 
@@ -786,7 +808,7 @@ const UserTicketsView = ({
             <button type="button" onClick={() => setIsNewTicketOpen(false)} className="flex-1 py-2.5 border border-border rounded-xl font-semibold hover:bg-muted transition-all">
               取消
             </button>
-            <button type="submit" className="flex-1 py-2.5 bg-accent text-accent-foreground rounded-xl font-bold hover:opacity-90 transition-all">
+            <button type="submit" className="flex-1 py-2.5 brand-gradient text-white rounded-xl font-bold hover:brightness-110 transition-all">
               提交工单
             </button>
           </div>
@@ -945,12 +967,11 @@ export default function UserPortal() {
       >
         <div className={cn('p-6 flex items-center gap-3 transition-all duration-300 overflow-hidden shrink-0', sidebarOpen ? 'justify-between' : 'justify-center px-0')}>
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 bg-accent rounded-xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-lg shadow-accent/20">
-              <Activity className="text-accent-foreground" size={20} />
-            </div>
+            <BrandLogo size={36} className="shrink-0" />
             {sidebarOpen && (
-              <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-lg font-black tracking-tight whitespace-nowrap text-foreground">
+              <motion.h1 initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="text-lg font-black tracking-tight whitespace-nowrap text-foreground flex items-center gap-1.5">
                 NodeAdmin
+                <span className="brand-gradient text-[10px] font-black px-1.5 py-0.5 rounded text-white">PRO</span>
               </motion.h1>
             )}
           </div>
@@ -970,9 +991,9 @@ export default function UserPortal() {
               className={cn(
                 'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 group relative',
                 activeView === item.id
-                  ? 'bg-accent text-accent-foreground shadow-xl shadow-accent/10 translate-x-1'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 dark:hover:bg-slate-800/50',
-                !sidebarOpen && 'justify-center px-0 translate-x-0'
+                  ? 'bg-brand-light text-brand dark:text-blue-400 shadow-sm nav-active-indicator'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-brand-light/50 dark:hover:bg-slate-800/50',
+                !sidebarOpen && 'justify-center px-0'
               )}
               title={!sidebarOpen ? item.label : undefined}
             >
@@ -993,7 +1014,7 @@ export default function UserPortal() {
 
         <div className={cn('p-4 border-t border-border dark:border-none mt-auto shrink-0 transition-all', !sidebarOpen && 'px-2')}>
           <div className={cn('flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors duration-300 overflow-hidden', !sidebarOpen && 'justify-center')}>
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold transition-colors duration-300 shrink-0">
+            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-xs font-bold text-white transition-colors duration-300 shrink-0 shadow-md shadow-blue-600/20">
               {(adminName || adminEmail || 'U').charAt(0).toUpperCase()}
             </div>
             {sidebarOpen && (

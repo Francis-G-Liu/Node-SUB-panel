@@ -12,6 +12,12 @@
   --color-accent-foreground: var(--accent-foreground);
   
   --color-mid-layer: var(--mid-layer);
+
+  /* Brand Colors */
+  --color-brand: var(--brand-primary);
+  --color-brand-light: var(--brand-primary-light);
+  --color-brand-dark: var(--brand-primary-dark);
+  --color-brand-foreground: var(--brand-foreground);
   
   --color-tag-success-bg: var(--tag-success-bg);
   --color-tag-success-text: var(--tag-success-text);
@@ -46,6 +52,13 @@
   --accent-foreground: #ffffff;
   
   --mid-layer: #ffffff;
+
+  /* Brand Token System — Tech Blue */
+  --brand-primary: #2563eb;
+  --brand-primary-light: #dbeafe;
+  --brand-primary-dark: #1d4ed8;
+  --brand-foreground: #ffffff;
+  --brand-gradient: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
 
   /* Tag Tokens - Light Mode */
   --tag-success-bg: #f0fdf4;
@@ -84,6 +97,13 @@
   --accent: #f1f5f9;
   --accent-foreground: #0f172a;
 
+  /* Brand Token System — Dark Variant */
+  --brand-primary: #3b82f6;
+  --brand-primary-light: rgba(59, 130, 246, 0.15);
+  --brand-primary-dark: #60a5fa;
+  --brand-foreground: #ffffff;
+  --brand-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+
   /* Tag Tokens - Dark Mode - Desaturated & High Legibility */
   --tag-success-bg: rgba(16, 185, 129, 0.1);
   --tag-success-text: #34d399;
@@ -117,6 +137,77 @@ body {
               color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
               box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Brand Gradient Utility */
+.brand-gradient {
+  background: var(--brand-gradient);
+}
+
+.brand-gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Login Page Grid Background */
+.login-grid-bg {
+  background-image:
+    linear-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.dark .login-grid-bg {
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Login Page Radial Glow */
+.login-glow {
+  background: radial-gradient(ellipse at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 60%);
+}
+
+.dark .login-glow {
+  background: radial-gradient(ellipse at 50% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 60%);
+}
+
+/* Brand Nav Active Indicator */
+.nav-active-indicator {
+  position: relative;
+}
+.nav-active-indicator::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  border-radius: 0 4px 4px 0;
+  background: var(--brand-gradient);
+}
+
+/* Logo Glow Animation */
+@keyframes logoGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.3), 0 0 40px rgba(124, 58, 237, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(37, 99, 235, 0.5), 0 0 60px rgba(124, 58, 237, 0.2); }
+}
+
+.logo-glow {
+  animation: logoGlow 3s ease-in-out infinite;
+}
+
+/* Pulse dot for status */
+@keyframes brandPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+.brand-pulse {
+  animation: brandPulse 2s ease-in-out infinite;
 }
 
 .custom-scrollbar::-webkit-scrollbar {

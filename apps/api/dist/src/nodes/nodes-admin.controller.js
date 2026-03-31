@@ -16,6 +16,8 @@ exports.NodesAdminController = void 0;
 const common_1 = require("@nestjs/common");
 const nodes_service_1 = require("./nodes.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const create_node_dto_1 = require("./dto/create-node.dto");
+const update_node_dto_1 = require("./dto/update-node.dto");
 let NodesAdminController = class NodesAdminController {
     nodesService;
     constructor(nodesService) {
@@ -68,10 +70,10 @@ let NodesAdminController = class NodesAdminController {
     create(body) {
         return this.nodesService.create({
             providerId: body.providerId,
-            hostname: body.hostname,
-            port: Number(body.port),
+            hostname: body.hostname.trim(),
+            port: body.port,
             protocol: body.protocol,
-            region: body.region,
+            region: body.region.trim(),
             tags: body.tags ?? [],
             active: body.active,
             maxBandwidthMbps: body.maxBandwidthMbps,
@@ -79,10 +81,10 @@ let NodesAdminController = class NodesAdminController {
     }
     update(id, body) {
         return this.nodesService.update(id, {
-            hostname: body.hostname,
-            port: body.port !== undefined ? Number(body.port) : undefined,
+            hostname: body.hostname?.trim(),
+            port: body.port,
             protocol: body.protocol,
-            region: body.region,
+            region: body.region?.trim(),
             tags: body.tags,
             active: body.active,
             maxBandwidthMbps: body.maxBandwidthMbps,
@@ -123,7 +125,7 @@ __decorate([
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [create_node_dto_1.CreateNodeDto]),
     __metadata("design:returntype", void 0)
 ], NodesAdminController.prototype, "create", null);
 __decorate([
@@ -132,7 +134,7 @@ __decorate([
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, update_node_dto_1.UpdateNodeDto]),
     __metadata("design:returntype", void 0)
 ], NodesAdminController.prototype, "update", null);
 __decorate([

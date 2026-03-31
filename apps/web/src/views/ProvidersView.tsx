@@ -4,10 +4,10 @@ import {
   Plus, Search, RefreshCw, Edit, Trash2, FileUp, 
   ExternalLink, Globe, Tag, Clock, CheckCircle2, AlertCircle
 } from 'lucide-react';
-import yaml from 'js-yaml';
 import { toast } from 'sonner';
 import { Card, Badge, Modal } from '../components/UI';
 import { cn } from '../lib/utils';
+import { extractProviderYamlFields } from '../lib/safe-yaml';
 import type { Provider } from '../types';
 
 interface ProvidersViewProps {
@@ -62,23 +62,18 @@ export const ProvidersView = ({ providers, onAction }: ProvidersViewProps) => {
       reader.onload = (event) => {
         const content = event.target?.result as string;
         try {
-          const parsed = yaml.load(content) as any;
-          if (parsed && typeof parsed === 'object') {
-            setFormData(prev => ({ 
-              ...prev, 
-              name: parsed.name || prev.name,
-              subscriptionUrl: parsed.url || parsed.subscriptionUrl || prev.subscriptionUrl,
-              regionHint: parsed.region || parsed.regionHint || prev.regionHint,
-              syncIntervalMinutes: parsed.interval || parsed.syncIntervalMinutes || prev.syncIntervalMinutes,
-              tags: Array.isArray(parsed.tags) ? parsed.tags.join(', ') : (parsed.tags || prev.tags),
-              yamlContent: content 
-            }));
-            toast.success('YAML parsed successfully');
-          } else {
-            setFormData(prev => ({ ...prev, yamlContent: content }));
-            toast.success('YAML file loaded');
-          }
-        } catch (err) {
+          const parsed = extractProviderYamlFields(content);
+          setFormData(prev => ({ 
+            ...prev, 
+            name: parsed.name ?? prev.name,
+            subscriptionUrl: parsed.subscriptionUrl ?? prev.subscriptionUrl,
+            regionHint: parsed.regionHint ?? prev.regionHint,
+            syncIntervalMinutes: parsed.syncIntervalMinutes ?? prev.syncIntervalMinutes,
+            tags: parsed.tags ?? prev.tags,
+            yamlContent: content 
+          }));
+          toast.success('YAML parsed successfully');
+        } catch {
           setFormData(prev => ({ ...prev, yamlContent: content }));
           toast.success('File loaded as text');
         }
@@ -90,19 +85,17 @@ export const ProvidersView = ({ providers, onAction }: ProvidersViewProps) => {
   const parseYamlContent = () => {
     if (!formData.yamlContent) return;
     try {
-      const parsed = yaml.load(formData.yamlContent) as any;
-      if (parsed && typeof parsed === 'object') {
-        setFormData(prev => ({
-          ...prev,
-          name: parsed.name || prev.name,
-          subscriptionUrl: parsed.url || parsed.subscriptionUrl || prev.subscriptionUrl,
-          regionHint: parsed.region || parsed.regionHint || prev.regionHint,
-          syncIntervalMinutes: parsed.interval || parsed.syncIntervalMinutes || prev.syncIntervalMinutes,
-          tags: Array.isArray(parsed.tags) ? parsed.tags.join(', ') : (parsed.tags || prev.tags)
-        }));
-        toast.success(t('parsed') || 'Parsed successfully');
-      }
-    } catch (err) {
+      const parsed = extractProviderYamlFields(formData.yamlContent);
+      setFormData(prev => ({
+        ...prev,
+        name: parsed.name ?? prev.name,
+        subscriptionUrl: parsed.subscriptionUrl ?? prev.subscriptionUrl,
+        regionHint: parsed.regionHint ?? prev.regionHint,
+        syncIntervalMinutes: parsed.syncIntervalMinutes ?? prev.syncIntervalMinutes,
+        tags: parsed.tags ?? prev.tags
+      }));
+      toast.success(t('parsed') || 'Parsed successfully');
+    } catch {
       toast.error(t('invalidYaml') || 'Invalid YAML content');
     }
   };
@@ -111,7 +104,10 @@ export const ProvidersView = ({ providers, onAction }: ProvidersViewProps) => {
     e.preventDefault();
     const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(t => t !== '');
     const payload = { 
-      ...formData, 
+      name: formData.name,
+      subscriptionUrl: formData.subscriptionUrl,
+      regionHint: formData.regionHint,
+      syncIntervalMinutes: formData.syncIntervalMinutes,
       tags: tagsArray 
     };
 

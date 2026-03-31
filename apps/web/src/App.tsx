@@ -53,8 +53,11 @@ import {
 } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
 import { Toaster, toast } from 'sonner';
-import yaml from 'js-yaml';
 import { cn } from './lib/utils';
+import {
+  extractLegacyProviderYamlFields,
+  extractNodeYamlFields,
+} from './lib/safe-yaml';
 import { useAuthStore, type UserRole } from './store/auth';
 import type { 
   Node, Provider, Plan, Subscription, Ticket, Alert, User, AuditLog, Stats 
@@ -159,24 +162,52 @@ const Modal = ({ isOpen, onClose, title, children }: { isOpen: boolean, onClose:
   );
 };
 
+const BrandLogo = ({ size = 36, className = '' }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 36 36" fill="none" className={className}>
+    <defs>
+      <linearGradient id="brandGrad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stopColor="#2563eb" />
+        <stop offset="100%" stopColor="#7c3aed" />
+      </linearGradient>
+    </defs>
+    <rect width="36" height="36" rx="10" fill="url(#brandGrad)" />
+    {/* Node network: 4 nodes + connecting lines */}
+    <circle cx="12" cy="12" r="2.5" fill="white" />
+    <circle cx="24" cy="12" r="2.5" fill="white" />
+    <circle cx="12" cy="24" r="2.5" fill="white" />
+    <circle cx="24" cy="24" r="2.5" fill="white" />
+    <line x1="14.5" y1="12" x2="21.5" y2="12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="12" y1="14.5" x2="12" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="24" y1="14.5" x2="24" y2="21.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="14.5" y1="24" x2="21.5" y2="24" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="14" y1="14" x2="22" y2="22" stroke="white" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+  </svg>
+);
+
 const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handleLogin }: any) => {
   const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 font-sans transition-colors duration-500">
+    <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-4 sm:p-6 font-sans transition-colors duration-500 relative overflow-hidden">
+      {/* Brand grid background */}
+      <div className="absolute inset-0 login-grid-bg" />
+      <div className="absolute inset-0 login-glow" />
+
       <AnimatePresence>
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
-          className="mb-8 flex flex-col items-center"
+          className="mb-8 flex flex-col items-center relative z-10"
         >
-          <div className="w-16 h-16 bg-mid-layer rounded-2xl flex items-center justify-center mb-5 shadow-2xl relative overflow-hidden group border border-border">
-            <div className="absolute inset-0 bg-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <Activity size={32} className="text-foreground relative z-10" />
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 logo-glow">
+            <BrandLogo size={80} />
           </div>
-          <h1 className="text-3xl font-black mb-2 tracking-tighter text-foreground">NodeAdmin Pro</h1>
+          <h1 className="text-3xl font-black mb-2 tracking-tighter text-foreground flex items-center gap-2.5">
+            NodeAdmin
+            <span className="brand-gradient text-sm font-black px-2.5 py-1 rounded-lg text-white">PRO</span>
+          </h1>
           <p className="text-muted-foreground font-semibold text-center max-w-[280px] sm:max-w-none opacity-80">{t('loginSubtitle')}</p>
         </motion.div>
       </AnimatePresence>
@@ -185,14 +216,14 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.1 }}
-        className="w-full max-w-[440px]"
+        className="w-full max-w-[440px] relative z-10"
       >
-        <Card className="p-8 sm:p-10 bg-card border border-border/50 dark:border-slate-700/20 shadow-2xl rounded-[32px]">
+        <Card className="p-8 sm:p-10 bg-card/80 backdrop-blur-xl border border-brand/20 dark:border-brand/10 shadow-2xl rounded-[32px]">
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2.5">
               <label className="text-sm font-bold text-foreground/80 ml-1">{t('username')}</label>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-brand transition-colors">
                   <UserIcon size={20} />
                 </div>
                 <input
@@ -201,7 +232,7 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@airport.dev"
-                  className="w-full pl-12 pr-4 py-4 bg-muted/30 border-2 border-transparent rounded-2xl focus:bg-card focus:border-border/50 focus:ring-4 focus:ring-accent/5 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium outline-none"
+                  className="w-full pl-12 pr-4 py-4 bg-muted/30 border-2 border-transparent rounded-2xl focus:bg-card focus:border-brand/30 focus:ring-4 focus:ring-brand/10 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium outline-none"
                 />
               </div>
             </div>
@@ -209,12 +240,12 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
             <div className="space-y-2.5">
               <div className="flex items-center justify-between ml-1">
                 <label className="text-sm font-bold text-foreground/80">{t('password')}</label>
-                <button type="button" className="text-sm font-bold text-foreground hover:text-accent transition-colors">
+                <button type="button" className="text-sm font-bold text-brand hover:text-brand-dark transition-colors">
                   {t('forgotPassword')}
                 </button>
               </div>
               <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground transition-colors">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-brand transition-colors">
                   <Lock size={20} />
                 </div>
                 <input
@@ -223,7 +254,7 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-4 bg-muted/30 border-2 border-transparent rounded-2xl focus:bg-card focus:border-border/50 focus:ring-4 focus:ring-accent/5 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium outline-none"
+                  className="w-full pl-12 pr-12 py-4 bg-muted/30 border-2 border-transparent rounded-2xl focus:bg-card focus:border-brand/30 focus:ring-4 focus:ring-brand/10 transition-all text-foreground placeholder:text-muted-foreground/50 font-medium outline-none"
                 />
                 <button 
                   type="button"
@@ -240,9 +271,9 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
                 <input 
                   type="checkbox" 
                   id="remember" 
-                  className="peer h-5 w-5 cursor-pointer appearance-none rounded-lg border-2 border-border checked:border-accent checked:bg-accent transition-all" 
+                  className="peer h-5 w-5 cursor-pointer appearance-none rounded-lg border-2 border-border checked:border-brand checked:bg-brand transition-all" 
                 />
-                <CheckCircle2 size={12} className="absolute left-1 top-1 text-accent-foreground opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
+                <CheckCircle2 size={12} className="absolute left-1 top-1 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
               </div>
               <label htmlFor="remember" className="text-sm font-bold text-muted-foreground cursor-pointer select-none">{t('rememberMe')}</label>
             </div>
@@ -250,7 +281,7 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full py-4 bg-[#1e293b] text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#0f172a] transform active:scale-[0.98] transition-all shadow-xl shadow-slate-900/10 disabled:opacity-70 disabled:cursor-not-allowed group"
+              className="w-full py-4 brand-gradient text-white rounded-2xl font-bold flex items-center justify-center gap-3 hover:brightness-110 transform active:scale-[0.98] transition-all shadow-xl shadow-blue-600/20 dark:shadow-blue-500/15 disabled:opacity-70 disabled:cursor-not-allowed group"
             >
               {isLoggingIn ? (
                 <span className="flex items-center gap-2">
@@ -272,9 +303,9 @@ const LoginView = ({ email, setEmail, password, setPassword, isLoggingIn, handle
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="mt-10 text-slate-400 text-sm font-bold tracking-tight uppercase"
+        className="mt-10 text-muted-foreground/50 text-xs font-medium tracking-wider relative z-10"
       >
-        {t('mockCredentials')}
+        NodeAdmin Pro v1.0.0
       </motion.p>
     </div>
   );
@@ -420,23 +451,18 @@ const ProvidersView = ({ providers, onAction }: { providers: Provider[], onActio
       reader.onload = (event) => {
         const content = event.target?.result as string;
         try {
-          const parsed = yaml.load(content) as any;
-          if (parsed && typeof parsed === 'object') {
-            setFormData(prev => ({ 
-              ...prev, 
-              name: parsed.name || prev.name,
-              url: parsed.url || prev.url,
-              region: parsed.region || prev.region,
-              interval: parsed.interval || prev.interval,
-              tags: Array.isArray(parsed.tags) ? parsed.tags.join(', ') : (parsed.tags || prev.tags),
-              yamlContent: content 
-            }));
-            toast.success(t('parsed'));
-          } else {
-            setFormData(prev => ({ ...prev, yamlContent: content }));
-            toast.success(t('loaded'));
-          }
-        } catch (err) {
+          const parsed = extractLegacyProviderYamlFields(content);
+          setFormData(prev => ({ 
+            ...prev, 
+            name: parsed.name ?? prev.name,
+            url: parsed.url ?? prev.url,
+            region: parsed.region ?? prev.region,
+            interval: parsed.interval ?? prev.interval,
+            tags: parsed.tags ?? prev.tags,
+            yamlContent: content 
+          }));
+          toast.success(t('parsed'));
+        } catch {
           setFormData(prev => ({ ...prev, yamlContent: content }));
           toast.success(t('loaded'));
         }
@@ -464,19 +490,17 @@ const ProvidersView = ({ providers, onAction }: { providers: Provider[], onActio
   const parseYamlContent = () => {
     if (!formData.yamlContent) return;
     try {
-      const parsed = yaml.load(formData.yamlContent) as any;
-      if (parsed && typeof parsed === 'object') {
-        setFormData(prev => ({
-          ...prev,
-          name: parsed.name || prev.name,
-          url: parsed.url || prev.url,
-          region: parsed.region || prev.region,
-          interval: parsed.interval || prev.interval,
-          tags: Array.isArray(parsed.tags) ? parsed.tags.join(', ') : (parsed.tags || prev.tags)
-        }));
-        toast.success(t('parsed'));
-      }
-    } catch (err) {
+      const parsed = extractLegacyProviderYamlFields(formData.yamlContent);
+      setFormData(prev => ({
+        ...prev,
+        name: parsed.name ?? prev.name,
+        url: parsed.url ?? prev.url,
+        region: parsed.region ?? prev.region,
+        interval: parsed.interval ?? prev.interval,
+        tags: parsed.tags ?? prev.tags
+      }));
+      toast.success(t('parsed'));
+    } catch {
       toast.error(t('invalidYaml'));
     }
   };
@@ -485,7 +509,10 @@ const ProvidersView = ({ providers, onAction }: { providers: Provider[], onActio
     e.preventDefault();
     const tagsArray = formData.tags.split(',').map(t => t.trim()).filter(t => t !== '');
     const payload = { 
-      ...formData, 
+      name: formData.name,
+      subscriptionUrl: formData.url,
+      regionHint: formData.region,
+      syncIntervalMinutes: formData.interval,
       tags: tagsArray 
     };
 
@@ -823,26 +850,13 @@ const NodesView = ({ nodes, onAction, token }: { nodes: Node[], onAction: any, t
 
   const applyYamlToForm = (content: string) => {
     try {
-      const parsed = yaml.load(content) as any;
-      if (!parsed || typeof parsed !== 'object') {
-        toast.error(t('invalidYaml'));
-        return;
-      }
-      const protocol = String(parsed.protocol ?? parsed.type ?? formData.protocol);
-      const host = String(parsed.host ?? parsed.hostname ?? parsed.server ?? formData.host);
-      const port = Number(parsed.port ?? formData.port);
-      const region = String(parsed.region ?? formData.region);
-      const tags = Array.isArray(parsed.tags)
-        ? parsed.tags.join(', ')
-        : typeof parsed.tags === 'string'
-        ? parsed.tags
-        : formData.tags;
+      const parsed = extractNodeYamlFields(content);
       setFormData({
-        protocol,
-        host,
-        port: Number.isFinite(port) ? port : formData.port,
-        region,
-        tags,
+        protocol: parsed.protocol ?? formData.protocol,
+        host: parsed.host ?? formData.host,
+        port: parsed.port ?? formData.port,
+        region: parsed.region ?? formData.region,
+        tags: parsed.tags ?? formData.tags,
       });
       toast.success(t('parsed'));
     } catch {
@@ -2638,16 +2652,15 @@ export default function App() {
           sidebarOpen ? "justify-between" : "justify-center px-0"
         )}>
           <div className="flex items-center gap-3 shrink-0">
-            <div className="w-9 h-9 bg-accent rounded-xl flex items-center justify-center transition-all duration-500 shrink-0 shadow-lg shadow-accent/20 group-hover:rotate-12">
-              <Activity className="text-accent-foreground" size={20} />
-            </div>
+            <BrandLogo size={36} className="shrink-0" />
             {sidebarOpen && (
               <motion.h1 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-lg font-black tracking-tight whitespace-nowrap text-foreground"
+                className="text-lg font-black tracking-tight whitespace-nowrap text-foreground flex items-center gap-1.5"
               >
-                NodeAdmin Pro
+                NodeAdmin
+                <span className="brand-gradient text-[10px] font-black px-1.5 py-0.5 rounded text-white">PRO</span>
               </motion.h1>
             )}
           </div>
@@ -2670,9 +2683,9 @@ export default function App() {
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 group relative",
                 activeView === item.id 
-                  ? "bg-accent text-accent-foreground shadow-xl shadow-accent/10 translate-x-1" 
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50 dark:hover:bg-slate-800/50",
-                !sidebarOpen && "justify-center px-0 translate-x-0"
+                  ? "bg-brand-light text-brand dark:text-blue-400 shadow-sm nav-active-indicator" 
+                  : "text-muted-foreground hover:text-foreground hover:bg-brand-light/50 dark:hover:bg-slate-800/50",
+                !sidebarOpen && "justify-center px-0"
               )}
               title={!sidebarOpen ? item.label : undefined}
             >
@@ -2700,7 +2713,7 @@ export default function App() {
             "flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors duration-300 overflow-hidden",
             !sidebarOpen && "justify-center"
           )}>
-            <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold transition-colors duration-300 shrink-0">AD</div>
+            <div className="w-8 h-8 rounded-full brand-gradient flex items-center justify-center text-xs font-bold text-white transition-colors duration-300 shrink-0 shadow-md shadow-blue-600/20">AD</div>
             {sidebarOpen && (
               <motion.div 
                 initial={{ opacity: 0 }}
