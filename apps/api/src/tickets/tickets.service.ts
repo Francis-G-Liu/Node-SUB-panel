@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TicketStatus } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
+import { AuditService } from '../observability/audit.service';
 
 export interface TicketListQuery {
   status?: TicketStatus;
@@ -10,7 +11,10 @@ export interface TicketListQuery {
 
 @Injectable()
 export class TicketsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
   // Fix #11: add pagination so response matches PaginatedResult<TicketSummary> expected by SDK
   async listForAdmin(query: TicketListQuery = {}) {
@@ -73,25 +77,36 @@ export class TicketsService {
       status?: 'open' | 'pending' | 'resolved';
       priority?: 'low' | 'medium' | 'high' | 'critical';
     },
+    operatorId?: string,
   ) {
-    return this.prisma.ticket.update({
+    const res = await this.prisma.ticket.update({
       where: { id },
       data: {
         status: payload.status,
         priority: payload.priority,
       },
     });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'UPDATE_TICKET_STATUS', 'Ticket', id, payload);
+    }
+
+    return res;
   }
 
-  async replyTicket(id: string, payload: { body: string; userId?: string }) {
-    return this.prisma.ticketMessage.create({
+  async replyTicket(id: string, payload: { body: string; userId: string }) {
+    const res = await this.prisma.ticketMessage.create({
       data: {
         ticketId: id,
         sender: 'admin',
         body: payload.body,
-        userId: payload.userId,
+        userId: payload.userId, // This is now forced to operatorId from controller
       },
     });
+
+    await this.audit.recordAction(payload.userId, 'REPLY_TICKET', 'Ticket', id);
+
+    return res;
   }
 
   async replyTicketAsUser(ticketId: string, userId: string, body: string) {

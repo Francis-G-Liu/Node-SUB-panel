@@ -2,10 +2,10 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PrismaService } from '../database/prisma.service';
 import { TelemetryService } from '../observability/telemetry.service';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
 @Injectable()
 export class HealthCheckService implements OnModuleInit {
@@ -34,17 +34,16 @@ export class HealthCheckService implements OnModuleInit {
 
   private async checkNode(node: any) {
     try {
-      // Use system ping command.
-      // Windows: ping -n 1 <host>
-      // Linux: ping -c 1 <host>
+      // Use system ping command with execFile to prevent OS command injection.
       const isWindows = process.platform === 'win32';
-      const cmd = isWindows
-        ? `ping -n 1 ${node.hostname}`
-        : `ping -c 1 ${node.hostname}`;
+      const cmd = 'ping';
+      const args = isWindows
+        ? ['-n', '1', node.hostname]
+        : ['-c', '1', node.hostname];
 
       const startTime = Date.now();
       try {
-        const { stdout } = await execAsync(cmd);
+        const { stdout } = await execFileAsync(cmd, args);
         const latencyMs = Date.now() - startTime;
 
         // Basic parsing for average latency if needed, but Date.now diff is a good fallback

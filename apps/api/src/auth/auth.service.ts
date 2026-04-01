@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../database/prisma.service';
 import { compareSync, hashSync } from 'bcryptjs';
@@ -32,11 +33,16 @@ export class AuthService {
     const jwtUser = await this.tryJwt(normalized);
     if (jwtUser) return jwtUser;
 
+    const hashed = this.hashToken(normalized);
     const user = await this.prisma.user.findFirst({
-      where: { apiToken: normalized },
+      where: { apiToken: hashed },
     });
     if (!user) throw new UnauthorizedException('Invalid token');
     return user;
+  }
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
   }
 
   async login(email: string, password: string) {

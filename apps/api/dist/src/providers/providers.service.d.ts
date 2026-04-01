@@ -1,7 +1,9 @@
 import { PrismaService } from '../database/prisma.service';
+import { AuditService } from '../observability/audit.service';
 export declare class ProvidersService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly audit;
+    constructor(prisma: PrismaService, audit: AuditService);
     list(): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
         createdAt: Date;
@@ -30,7 +32,7 @@ export declare class ProvidersService {
         subscriptionUrl: string;
         syncIntervalMinutes: number;
         tags?: string[];
-    }): Promise<{
+    }, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -47,18 +49,7 @@ export declare class ProvidersService {
         subscriptionUrl?: string;
         syncIntervalMinutes?: number;
         tags?: string[];
-    }): import("@prisma/client").Prisma.Prisma__ProviderClient<{
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        regionHint: string;
-        syncIntervalMinutes: number;
-        lastSyncAt: Date | null;
-        subscriptionUrl: string;
-        tags: import("@prisma/client/runtime/library").JsonValue;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    delete(id: string): Promise<{
+    }, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -69,7 +60,18 @@ export declare class ProvidersService {
         subscriptionUrl: string;
         tags: import("@prisma/client/runtime/library").JsonValue;
     }>;
-    sync(providerId: string): Promise<{
+    delete(id: string, operatorId?: string): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        regionHint: string;
+        syncIntervalMinutes: number;
+        lastSyncAt: Date | null;
+        subscriptionUrl: string;
+        tags: import("@prisma/client/runtime/library").JsonValue;
+    }>;
+    sync(providerId: string, operatorId?: string): Promise<{
         provider: {
             id: string;
             createdAt: Date;

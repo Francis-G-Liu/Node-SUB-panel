@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('categories')
 @Roles('super_admin', 'ops')
@@ -21,17 +22,17 @@ export class AdminCategoriesController {
   }
 
   @Post()
-  create(@Body() data: any) {
-    return this.subscriptionsService.createCategory(data);
+  create(@CurrentUser() user: any, @Body() data: any) {
+    return this.subscriptionsService.createCategory(data, user.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: any) {
-    return this.subscriptionsService.updateCategory(id, data);
+  update(@CurrentUser() user: any, @Param('id') id: string, @Body() data: any) {
+    return this.subscriptionsService.updateCategory(id, data, user.id);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.subscriptionsService.deleteCategory(id);
+  delete(@CurrentUser() user: any, @Param('id') id: string) {
+    return this.subscriptionsService.deleteCategory(id, user.id);
   }
 }

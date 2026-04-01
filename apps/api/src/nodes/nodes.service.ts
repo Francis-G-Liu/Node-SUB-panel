@@ -6,6 +6,7 @@ import {
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { TelemetryService } from '../observability/telemetry.service';
+import { AuditService } from '../observability/audit.service';
 
 export interface NodeListFilters {
   region?: string;
@@ -57,6 +58,7 @@ export class NodesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly telemetry: TelemetryService,
+    private readonly audit: AuditService,
   ) {}
 
   async list(filters: NodeListFilters) {
@@ -167,7 +169,7 @@ export class NodesService {
     }));
   }
 
-  async create(data: CreateNodeInput) {
+  async create(data: CreateNodeInput, operatorId?: string) {
     const providerId =
       data.providerId ??
       (await this.prisma.provider.findFirst({ select: { id: true } }))?.id;
@@ -188,10 +190,17 @@ export class NodesService {
         maxBandwidthMbps: data.maxBandwidthMbps,
       },
     });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'CREATE_NODE', 'Node', created.id, {
+        hostname: created.hostname,
+      });
+    }
+
     return this.getById(created.id);
   }
 
-  async update(id: string, data: UpdateNodeInput) {
+  async update(id: string, data: UpdateNodeInput, operatorId?: string) {
     await this.prisma.node.findUniqueOrThrow({ where: { id } });
     await this.prisma.node.update({
       where: { id },
@@ -205,12 +214,22 @@ export class NodesService {
         maxBandwidthMbps: data.maxBandwidthMbps,
       },
     });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'UPDATE_NODE', 'Node', id, data);
+    }
+
     return this.getById(id);
   }
 
-  async delete(id: string) {
+  async delete(id: string, operatorId?: string) {
     await this.prisma.telemetrySample.deleteMany({ where: { nodeId: id } });
     await this.prisma.node.delete({ where: { id } });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'DELETE_NODE', 'Node', id);
+    }
+
     return { success: true };
   }
 }

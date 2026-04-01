@@ -16,6 +16,7 @@ exports.AdminSubscriptionsController = void 0;
 const common_1 = require("@nestjs/common");
 const subscriptions_service_1 = require("./subscriptions.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let AdminSubscriptionsController = class AdminSubscriptionsController {
     subscriptionsService;
     constructor(subscriptionsService) {
@@ -33,11 +34,11 @@ let AdminSubscriptionsController = class AdminSubscriptionsController {
             expiry: s.expiresAt,
         }));
     }
-    create(data) {
-        return this.subscriptionsService.createSubscription(data);
+    create(user, data) {
+        return this.subscriptionsService.createSubscription(data, user.id);
     }
-    remove(id) {
-        return this.subscriptionsService.deleteSubscription(id);
+    remove(user, id) {
+        return this.subscriptionsService.deleteSubscription(id, user.id);
     }
 };
 exports.AdminSubscriptionsController = AdminSubscriptionsController;
@@ -49,16 +50,18 @@ __decorate([
 ], AdminSubscriptionsController.prototype, "list", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AdminSubscriptionsController.prototype, "create", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AdminSubscriptionsController.prototype, "remove", null);
 exports.AdminSubscriptionsController = AdminSubscriptionsController = __decorate([

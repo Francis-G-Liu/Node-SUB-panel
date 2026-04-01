@@ -12,6 +12,7 @@ import { Roles } from '../auth/roles.decorator';
 import { CreateProviderDto } from './dto/create-provider.dto';
 import { UpdateProviderDto } from './dto/update-provider.dto';
 import { Public } from '../auth/public.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('providers')
 @Roles('super_admin', 'ops')
@@ -48,22 +49,26 @@ export class ProvidersController {
   }
 
   @Post()
-  create(@Body() dto: CreateProviderDto) {
-    return this.providersService.create(dto);
+  create(@CurrentUser() user: any, @Body() dto: CreateProviderDto) {
+    return this.providersService.create(dto, user.id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateProviderDto) {
-    return this.providersService.update(id, dto);
+  update(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+    @Body() dto: UpdateProviderDto,
+  ) {
+    return this.providersService.update(id, dto, user.id);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
-    return this.providersService.delete(id);
+  delete(@CurrentUser() user: any, @Param('id') id: string) {
+    return this.providersService.delete(id, user.id);
   }
 
   @Post(':id/sync')
-  sync(@Param('id') id: string) {
-    return this.providersService.sync(id);
+  sync(@CurrentUser() user: any, @Param('id') id: string) {
+    return this.providersService.sync(id, user.id);
   }
 }

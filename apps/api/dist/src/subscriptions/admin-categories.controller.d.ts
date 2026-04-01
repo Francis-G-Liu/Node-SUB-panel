@@ -10,23 +10,23 @@ export declare class AdminCategoriesController {
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
     }[]>;
-    create(data: any): import("@prisma/client").Prisma.Prisma__UserCategoryClient<{
+    create(user: any, data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    update(id: string, data: any): import("@prisma/client").Prisma.Prisma__UserCategoryClient<{
+    }>;
+    update(user: any, id: string, data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    delete(id: string): Promise<{
+    }>;
+    delete(user: any, id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

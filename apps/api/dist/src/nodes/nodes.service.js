@@ -13,6 +13,7 @@ exports.NodesService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../database/prisma.service");
 const telemetry_service_1 = require("../observability/telemetry.service");
+const audit_service_1 = require("../observability/audit.service");
 const buildHealth = (sample) => sample
     ? {
         latencyMs: sample.latencyMs,
@@ -23,9 +24,11 @@ const buildHealth = (sample) => sample
 let NodesService = class NodesService {
     prisma;
     telemetry;
-    constructor(prisma, telemetry) {
+    audit;
+    constructor(prisma, telemetry, audit) {
         this.prisma = prisma;
         this.telemetry = telemetry;
+        this.audit = audit;
     }
     async list(filters) {
         const page = filters.page ?? 1;
@@ -117,7 +120,7 @@ let NodesService = class NodesService {
             health: buildHealth(sampleMap.get(node.id)),
         }));
     }
-    async create(data) {
+    async create(data, operatorId) {
         const providerId = data.providerId ??
             (await this.prisma.provider.findFirst({ select: { id: true } }))?.id;
         if (!providerId) {
@@ -135,9 +138,14 @@ let NodesService = class NodesService {
                 maxBandwidthMbps: data.maxBandwidthMbps,
             },
         });
+        if (operatorId) {
+            await this.audit.recordAction(operatorId, 'CREATE_NODE', 'Node', created.id, {
+                hostname: created.hostname,
+            });
+        }
         return this.getById(created.id);
     }
-    async update(id, data) {
+    async update(id, data, operatorId) {
         await this.prisma.node.findUniqueOrThrow({ where: { id } });
         await this.prisma.node.update({
             where: { id },
@@ -151,11 +159,17 @@ let NodesService = class NodesService {
                 maxBandwidthMbps: data.maxBandwidthMbps,
             },
         });
+        if (operatorId) {
+            await this.audit.recordAction(operatorId, 'UPDATE_NODE', 'Node', id, data);
+        }
         return this.getById(id);
     }
-    async delete(id) {
+    async delete(id, operatorId) {
         await this.prisma.telemetrySample.deleteMany({ where: { nodeId: id } });
         await this.prisma.node.delete({ where: { id } });
+        if (operatorId) {
+            await this.audit.recordAction(operatorId, 'DELETE_NODE', 'Node', id);
+        }
         return { success: true };
     }
 };
@@ -163,6 +177,7 @@ exports.NodesService = NodesService;
 exports.NodesService = NodesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        telemetry_service_1.TelemetryService])
+        telemetry_service_1.TelemetryService,
+        audit_service_1.AuditService])
 ], NodesService);
 //# sourceMappingURL=nodes.service.js.map

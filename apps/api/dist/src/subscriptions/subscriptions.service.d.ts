@@ -1,7 +1,9 @@
 import { PrismaService } from '../database/prisma.service';
+import { AuditService } from '../observability/audit.service';
 export declare class SubscriptionsService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly audit;
+    constructor(prisma: PrismaService, audit: AuditService);
     listPlans(): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
         createdAt: Date;
@@ -13,7 +15,7 @@ export declare class SubscriptionsService {
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
     }[]>;
-    createPlan(data: any): Promise<{
+    createPlan(data: any, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -24,7 +26,7 @@ export declare class SubscriptionsService {
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
     }>;
-    updatePlan(id: string, data: any): import("@prisma/client").Prisma.Prisma__PlanClient<{
+    updatePlan(id: string, data: any, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -34,8 +36,8 @@ export declare class SubscriptionsService {
         concurrentDevices: number;
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    deletePlan(id: string): import("@prisma/client").Prisma.Prisma__PlanClient<{
+    }>;
+    deletePlan(id: string, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -45,7 +47,7 @@ export declare class SubscriptionsService {
         concurrentDevices: number;
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }>;
     listSubscriptions(): import("@prisma/client").Prisma.PrismaPromise<({
         user: {
             email: string;
@@ -66,7 +68,7 @@ export declare class SubscriptionsService {
         userId: string;
         planId: string;
     })[]>;
-    createSubscription(data: any): Promise<{
+    createSubscription(data: any, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -77,7 +79,7 @@ export declare class SubscriptionsService {
         userId: string;
         planId: string;
     }>;
-    deleteSubscription(id: string): import("@prisma/client").Prisma.Prisma__SubscriptionClient<{
+    deleteSubscription(id: string, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -87,7 +89,8 @@ export declare class SubscriptionsService {
         expiresAt: Date;
         userId: string;
         planId: string;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }>;
+    private readonly safeUserSelect;
     listUsers(): import("@prisma/client").Prisma.PrismaPromise<{
         id: string;
         email: string;
@@ -98,38 +101,29 @@ export declare class SubscriptionsService {
             name: string;
         } | null;
     }[]>;
-    createUser(data: any): Promise<{
+    createUser(data: any, currentUserRole?: string, operatorId?: string): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;
     }>;
-    updateUser(id: string, data: any): Promise<{
+    updateUser(id: string, data: any, currentUserRole?: string, operatorId?: string): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;
     }>;
-    deleteUser(id: string): Promise<{
+    deleteUser(id: string, operatorId?: string): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;
@@ -142,23 +136,23 @@ export declare class SubscriptionsService {
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
     }[]>;
-    createCategory(data: any): import("@prisma/client").Prisma.Prisma__UserCategoryClient<{
+    createCategory(data: any, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    updateCategory(id: string, data: any): import("@prisma/client").Prisma.Prisma__UserCategoryClient<{
+    }>;
+    updateCategory(id: string, data: any, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         name: string;
         isSystem: boolean;
         baseRole: import("@prisma/client").$Enums.UserRole;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    deleteCategory(id: string): Promise<{
+    }>;
+    deleteCategory(id: string, operatorId?: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;

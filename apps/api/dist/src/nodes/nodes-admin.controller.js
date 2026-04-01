@@ -18,6 +18,7 @@ const nodes_service_1 = require("./nodes.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
 const create_node_dto_1 = require("./dto/create-node.dto");
 const update_node_dto_1 = require("./dto/update-node.dto");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let NodesAdminController = class NodesAdminController {
     nodesService;
     constructor(nodesService) {
@@ -67,7 +68,7 @@ let NodesAdminController = class NodesAdminController {
     async metrics(id) {
         return { nodeId: id, samples: await this.nodesService.getMetrics(id) };
     }
-    create(body) {
+    create(user, body) {
         return this.nodesService.create({
             providerId: body.providerId,
             hostname: body.hostname.trim(),
@@ -77,9 +78,9 @@ let NodesAdminController = class NodesAdminController {
             tags: body.tags ?? [],
             active: body.active,
             maxBandwidthMbps: body.maxBandwidthMbps,
-        });
+        }, user.id);
     }
-    update(id, body) {
+    update(user, id, body) {
         return this.nodesService.update(id, {
             hostname: body.hostname?.trim(),
             port: body.port,
@@ -88,10 +89,10 @@ let NodesAdminController = class NodesAdminController {
             tags: body.tags,
             active: body.active,
             maxBandwidthMbps: body.maxBandwidthMbps,
-        });
+        }, user.id);
     }
-    remove(id) {
-        return this.nodesService.delete(id);
+    remove(user, id) {
+        return this.nodesService.delete(id, user.id);
     }
 };
 exports.NodesAdminController = NodesAdminController;
@@ -123,26 +124,29 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_node_dto_1.CreateNodeDto]),
+    __metadata("design:paramtypes", [Object, create_node_dto_1.CreateNodeDto]),
     __metadata("design:returntype", void 0)
 ], NodesAdminController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_node_dto_1.UpdateNodeDto]),
+    __metadata("design:paramtypes", [Object, String, update_node_dto_1.UpdateNodeDto]),
     __metadata("design:returntype", void 0)
 ], NodesAdminController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], NodesAdminController.prototype, "remove", null);
 exports.NodesAdminController = NodesAdminController = __decorate([

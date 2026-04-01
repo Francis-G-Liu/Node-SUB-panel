@@ -20,6 +20,7 @@ export declare class AuthService {
         updatedAt: Date;
         categoryId: string | null;
     }>;
+    private hashToken;
     login(email: string, password: string): Promise<{
         accessToken: string;
         refreshToken: string;

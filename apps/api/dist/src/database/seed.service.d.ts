@@ -4,5 +4,6 @@ export declare class SeedService implements OnModuleInit {
     private readonly prisma;
     private readonly logger;
     constructor(prisma: PrismaService);
+    private hashToken;
     onModuleInit(): Promise<void>;
 }

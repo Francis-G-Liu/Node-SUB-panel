@@ -6,9 +6,10 @@ import { MeController } from './me.controller';
 import { AdminSubscriptionsController } from './admin-subscriptions.controller';
 import { AdminUsersController } from './admin-users.controller';
 import { AdminCategoriesController } from './admin-categories.controller';
+import { ObservabilityModule } from '../observability/observability.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, ObservabilityModule],
   controllers: [
     PlansController,
     MeController,

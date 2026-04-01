@@ -14,19 +14,20 @@ const stream_controller_1 = require("./stream.controller");
 const notification_client_1 = require("./notification-client");
 const audit_logs_controller_1 = require("./audit-logs.controller");
 const database_module_1 = require("../database/database.module");
+const audit_service_1 = require("./audit.service");
 let ObservabilityModule = class ObservabilityModule {
 };
 exports.ObservabilityModule = ObservabilityModule;
 exports.ObservabilityModule = ObservabilityModule = __decorate([
     (0, common_1.Module)({
         imports: [database_module_1.DatabaseModule],
-        providers: [telemetry_service_1.TelemetryService, notification_client_1.NotificationClient],
+        providers: [telemetry_service_1.TelemetryService, notification_client_1.NotificationClient, audit_service_1.AuditService],
         controllers: [
             stream_controller_1.StreamController,
             audit_logs_controller_1.AuditLogsController,
             telemetry_controller_1.TelemetryIngestController,
         ],
-        exports: [telemetry_service_1.TelemetryService],
+        exports: [telemetry_service_1.TelemetryService, audit_service_1.AuditService],
     })
 ], ObservabilityModule);
 //# sourceMappingURL=observability.module.js.map

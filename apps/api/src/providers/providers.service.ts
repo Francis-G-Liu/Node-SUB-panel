@@ -5,10 +5,15 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { parseSubscriptionContent } from './subscription-parser';
+import { safeFetch } from '../utils/ssrf-validator';
+import { AuditService } from '../observability/audit.service';
 
 @Injectable()
 export class ProvidersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly audit: AuditService,
+  ) {}
 
   list() {
     return this.prisma.provider.findMany({ orderBy: { name: 'asc' } });
@@ -18,13 +23,16 @@ export class ProvidersService {
     return this.prisma.provider.findUnique({ where: { id } });
   }
 
-  async create(payload: {
-    name: string;
-    regionHint: string;
-    subscriptionUrl: string;
-    syncIntervalMinutes: number;
-    tags?: string[];
-  }) {
+  async create(
+    payload: {
+      name: string;
+      regionHint: string;
+      subscriptionUrl: string;
+      syncIntervalMinutes: number;
+      tags?: string[];
+    },
+    operatorId?: string,
+  ) {
     try {
       const res = await this.prisma.provider.create({
         data: {
@@ -36,6 +44,12 @@ export class ProvidersService {
         },
       });
 
+      if (operatorId) {
+        await this.audit.recordAction(operatorId, 'CREATE_PROVIDER', 'Provider', res.id, {
+          name: res.name,
+        });
+      }
+
       return res;
     } catch (err: any) {
       console.error('FAILED to create provider', err.message);
@@ -43,7 +57,7 @@ export class ProvidersService {
     }
   }
 
-  update(
+  async update(
     id: string,
     payload: {
       name?: string;
@@ -52,16 +66,23 @@ export class ProvidersService {
       syncIntervalMinutes?: number;
       tags?: string[];
     },
+    operatorId?: string,
   ) {
-    return this.prisma.provider.update({
+    const res = await this.prisma.provider.update({
       where: { id },
       data: {
         ...payload,
       },
     });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'UPDATE_PROVIDER', 'Provider', id, payload);
+    }
+
+    return res;
   }
 
-  async delete(id: string) {
+  async delete(id: string, operatorId?: string) {
     const nodes = await this.prisma.node.findMany({
       where: { providerId: id },
       select: { id: true },
@@ -86,19 +107,25 @@ export class ProvidersService {
       });
 
       // 4. Finally delete the provider
-      return tx.provider.delete({
+      const res = await tx.provider.delete({
         where: { id },
       });
+
+      if (operatorId) {
+        await this.audit.recordAction(operatorId, 'DELETE_PROVIDER', 'Provider', id);
+      }
+
+      return res;
     });
   }
 
-  async sync(providerId: string) {
+  async sync(providerId: string, operatorId?: string) {
     const provider = await this.prisma.provider.findUnique({
       where: { id: providerId },
     });
     if (!provider) throw new NotFoundException('Provider not found');
 
-    const response = await fetch(provider.subscriptionUrl, { method: 'GET' });
+    const response = await safeFetch(provider.subscriptionUrl, { method: 'GET' });
     if (!response.ok) {
       // Fix #12: return 502 Bad Gateway when upstream subscription fetch fails
       throw new BadGatewayException(
@@ -165,6 +192,10 @@ export class ProvidersService {
       where: { id: provider.id },
       data: { lastSyncAt: new Date() },
     });
+
+    if (operatorId) {
+      await this.audit.recordAction(operatorId, 'SYNC_PROVIDER', 'Provider', provider.id);
+    }
 
     return { provider: updated, imported: parsed.length };
   }

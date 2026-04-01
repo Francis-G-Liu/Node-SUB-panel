@@ -12,10 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TicketsService = void 0;
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../database/prisma.service");
+const audit_service_1 = require("../observability/audit.service");
 let TicketsService = class TicketsService {
     prisma;
-    constructor(prisma) {
+    audit;
+    constructor(prisma, audit) {
         this.prisma = prisma;
+        this.audit = audit;
     }
     async listForAdmin(query = {}) {
         const page = query.page ?? 1;
@@ -58,17 +61,21 @@ let TicketsService = class TicketsService {
             },
         });
     }
-    async updateTicket(id, payload) {
-        return this.prisma.ticket.update({
+    async updateTicket(id, payload, operatorId) {
+        const res = await this.prisma.ticket.update({
             where: { id },
             data: {
                 status: payload.status,
                 priority: payload.priority,
             },
         });
+        if (operatorId) {
+            await this.audit.recordAction(operatorId, 'UPDATE_TICKET_STATUS', 'Ticket', id, payload);
+        }
+        return res;
     }
     async replyTicket(id, payload) {
-        return this.prisma.ticketMessage.create({
+        const res = await this.prisma.ticketMessage.create({
             data: {
                 ticketId: id,
                 sender: 'admin',
@@ -76,6 +83,8 @@ let TicketsService = class TicketsService {
                 userId: payload.userId,
             },
         });
+        await this.audit.recordAction(payload.userId, 'REPLY_TICKET', 'Ticket', id);
+        return res;
     }
     async replyTicketAsUser(ticketId, userId, body) {
         const ticket = await this.prisma.ticket.findFirst({
@@ -97,6 +106,7 @@ let TicketsService = class TicketsService {
 exports.TicketsService = TicketsService;
 exports.TicketsService = TicketsService = __decorate([
     (0, common_1.Injectable)(),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        audit_service_1.AuditService])
 ], TicketsService);
 //# sourceMappingURL=tickets.service.js.map

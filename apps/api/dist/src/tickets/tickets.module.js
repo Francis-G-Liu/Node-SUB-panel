@@ -12,12 +12,13 @@ const tickets_service_1 = require("./tickets.service");
 const tickets_admin_controller_1 = require("./tickets-admin.controller");
 const tickets_app_controller_1 = require("./tickets-app.controller");
 const database_module_1 = require("../database/database.module");
+const observability_module_1 = require("../observability/observability.module");
 let TicketsModule = class TicketsModule {
 };
 exports.TicketsModule = TicketsModule;
 exports.TicketsModule = TicketsModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [database_module_1.DatabaseModule, observability_module_1.ObservabilityModule],
         providers: [tickets_service_1.TicketsService],
         controllers: [tickets_admin_controller_1.TicketsAdminController, tickets_app_controller_1.TicketsAppController],
         exports: [tickets_service_1.TicketsService],

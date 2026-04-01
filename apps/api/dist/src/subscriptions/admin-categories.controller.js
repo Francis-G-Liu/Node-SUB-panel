@@ -16,6 +16,7 @@ exports.AdminCategoriesController = void 0;
 const common_1 = require("@nestjs/common");
 const subscriptions_service_1 = require("./subscriptions.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let AdminCategoriesController = class AdminCategoriesController {
     subscriptionsService;
     constructor(subscriptionsService) {
@@ -24,14 +25,14 @@ let AdminCategoriesController = class AdminCategoriesController {
     list() {
         return this.subscriptionsService.listCategories();
     }
-    create(data) {
-        return this.subscriptionsService.createCategory(data);
+    create(user, data) {
+        return this.subscriptionsService.createCategory(data, user.id);
     }
-    update(id, data) {
-        return this.subscriptionsService.updateCategory(id, data);
+    update(user, id, data) {
+        return this.subscriptionsService.updateCategory(id, data, user.id);
     }
-    delete(id) {
-        return this.subscriptionsService.deleteCategory(id);
+    delete(user, id) {
+        return this.subscriptionsService.deleteCategory(id, user.id);
     }
 };
 exports.AdminCategoriesController = AdminCategoriesController;
@@ -43,24 +44,27 @@ __decorate([
 ], AdminCategoriesController.prototype, "list", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AdminCategoriesController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", void 0)
 ], AdminCategoriesController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AdminCategoriesController.prototype, "delete", null);
 exports.AdminCategoriesController = AdminCategoriesController = __decorate([

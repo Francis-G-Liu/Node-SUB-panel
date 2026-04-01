@@ -10,37 +10,37 @@ export declare class PlansController {
         devices: number;
         rules: string;
     }[]>;
-    create(data: any): Promise<{
+    create(user: any, data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         bandwidthLimitGb: number;
         durationDays: number;
         concurrentDevices: number;
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
-    update(id: string, data: any): import("@prisma/client").Prisma.Prisma__PlanClient<{
+    update(user: any, id: string, data: any): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         name: string;
         bandwidthLimitGb: number;
         durationDays: number;
         concurrentDevices: number;
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
+    }>;
+    remove(user: any, id: string): Promise<{
+        id: string;
         createdAt: Date;
         updatedAt: Date;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
-    remove(id: string): import("@prisma/client").Prisma.Prisma__PlanClient<{
-        id: string;
         name: string;
         bandwidthLimitGb: number;
         durationDays: number;
         concurrentDevices: number;
         regionFilters: import("@prisma/client/runtime/library").JsonValue;
         nodeTags: import("@prisma/client/runtime/library").JsonValue;
-        createdAt: Date;
-        updatedAt: Date;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }>;
 }

@@ -16,6 +16,7 @@ exports.PlansController = void 0;
 const common_1 = require("@nestjs/common");
 const subscriptions_service_1 = require("./subscriptions.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let PlansController = class PlansController {
     subscriptionsService;
     constructor(subscriptionsService) {
@@ -32,48 +33,52 @@ let PlansController = class PlansController {
             rules: JSON.stringify(p.regionFilters),
         }));
     }
-    create(data) {
-        return this.subscriptionsService.createPlan(data);
+    create(user, data) {
+        return this.subscriptionsService.createPlan(data, user.id);
     }
-    update(id, data) {
-        return this.subscriptionsService.updatePlan(id, data);
+    update(user, id, data) {
+        return this.subscriptionsService.updatePlan(id, data, user.id);
     }
-    remove(id) {
-        return this.subscriptionsService.deletePlan(id);
+    remove(user, id) {
+        return this.subscriptionsService.deletePlan(id, user.id);
     }
 };
 exports.PlansController = PlansController;
 __decorate([
     (0, common_1.Get)(),
+    (0, roles_decorator_1.Roles)('super_admin', 'ops', 'support', 'user'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], PlansController.prototype, "list", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], PlansController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", void 0)
 ], PlansController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], PlansController.prototype, "remove", null);
 exports.PlansController = PlansController = __decorate([
     (0, common_1.Controller)('plans'),
-    (0, roles_decorator_1.Roles)('super_admin', 'ops', 'support', 'user'),
+    (0, roles_decorator_1.Roles)('super_admin', 'ops', 'support'),
     __metadata("design:paramtypes", [subscriptions_service_1.SubscriptionsService])
 ], PlansController);
 //# sourceMappingURL=plans.controller.js.map

@@ -12,6 +12,7 @@ import { NodesService } from './nodes.service';
 import { Roles } from '../auth/roles.decorator';
 import { CreateNodeDto } from './dto/create-node.dto';
 import { UpdateNodeDto } from './dto/update-node.dto';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('nodes')
 @Roles('super_admin', 'ops', 'support', 'auditor')
@@ -76,36 +77,47 @@ export class NodesAdminController {
 
   @Post()
   @Roles('super_admin', 'ops')
-  create(@Body() body: CreateNodeDto) {
-    return this.nodesService.create({
-      providerId: body.providerId,
-      hostname: body.hostname.trim(),
-      port: body.port,
-      protocol: body.protocol,
-      region: body.region.trim(),
-      tags: body.tags ?? [],
-      active: body.active,
-      maxBandwidthMbps: body.maxBandwidthMbps,
-    });
+  create(@CurrentUser() user: any, @Body() body: CreateNodeDto) {
+    return this.nodesService.create(
+      {
+        providerId: body.providerId,
+        hostname: body.hostname.trim(),
+        port: body.port,
+        protocol: body.protocol,
+        region: body.region.trim(),
+        tags: body.tags ?? [],
+        active: body.active,
+        maxBandwidthMbps: body.maxBandwidthMbps,
+      },
+      user.id,
+    );
   }
 
   @Patch(':id')
   @Roles('super_admin', 'ops')
-  update(@Param('id') id: string, @Body() body: UpdateNodeDto) {
-    return this.nodesService.update(id, {
-      hostname: body.hostname?.trim(),
-      port: body.port,
-      protocol: body.protocol,
-      region: body.region?.trim(),
-      tags: body.tags,
-      active: body.active,
-      maxBandwidthMbps: body.maxBandwidthMbps,
-    });
+  update(
+    @CurrentUser() user: any,
+    @Param('id') id: string,
+    @Body() body: UpdateNodeDto,
+  ) {
+    return this.nodesService.update(
+      id,
+      {
+        hostname: body.hostname?.trim(),
+        port: body.port,
+        protocol: body.protocol,
+        region: body.region?.trim(),
+        tags: body.tags,
+        active: body.active,
+        maxBandwidthMbps: body.maxBandwidthMbps,
+      },
+      user.id,
+    );
   }
 
   @Delete(':id')
   @Roles('super_admin', 'ops')
-  remove(@Param('id') id: string) {
-    return this.nodesService.delete(id);
+  remove(@CurrentUser() user: any, @Param('id') id: string) {
+    return this.nodesService.delete(id, user.id);
   }
 }

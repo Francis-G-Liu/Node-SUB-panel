@@ -11,6 +11,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
+const crypto_1 = require("crypto");
 const jwt_1 = require("@nestjs/jwt");
 const prisma_service_1 = require("../database/prisma.service");
 const bcryptjs_1 = require("bcryptjs");
@@ -33,12 +34,16 @@ let AuthService = class AuthService {
         const jwtUser = await this.tryJwt(normalized);
         if (jwtUser)
             return jwtUser;
+        const hashed = this.hashToken(normalized);
         const user = await this.prisma.user.findFirst({
-            where: { apiToken: normalized },
+            where: { apiToken: hashed },
         });
         if (!user)
             throw new common_1.UnauthorizedException('Invalid token');
         return user;
+    }
+    hashToken(token) {
+        return (0, crypto_1.createHash)('sha256').update(token).digest('hex');
     }
     async login(email, password) {
         const now = Date.now();

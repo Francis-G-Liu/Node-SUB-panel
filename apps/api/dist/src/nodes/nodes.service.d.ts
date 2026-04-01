@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
 import { TelemetryService } from '../observability/telemetry.service';
+import { AuditService } from '../observability/audit.service';
 export interface NodeListFilters {
     region?: string;
     tag?: string;
@@ -30,7 +31,8 @@ export interface UpdateNodeInput {
 export declare class NodesService {
     private readonly prisma;
     private readonly telemetry;
-    constructor(prisma: PrismaService, telemetry: TelemetryService);
+    private readonly audit;
+    constructor(prisma: PrismaService, telemetry: TelemetryService, audit: AuditService);
     list(filters: NodeListFilters): Promise<{
         data: {
             health: {
@@ -104,7 +106,7 @@ export declare class NodesService {
         online: boolean;
         lastCheckedAt: Date | null;
     }[]>;
-    create(data: CreateNodeInput): Promise<{
+    create(data: CreateNodeInput, operatorId?: string): Promise<{
         health: {
             latencyMs: number | null;
             packetLoss: number;
@@ -124,7 +126,7 @@ export declare class NodesService {
         online: boolean;
         lastCheckedAt: Date | null;
     }>;
-    update(id: string, data: UpdateNodeInput): Promise<{
+    update(id: string, data: UpdateNodeInput, operatorId?: string): Promise<{
         health: {
             latencyMs: number | null;
             packetLoss: number;
@@ -144,7 +146,7 @@ export declare class NodesService {
         online: boolean;
         lastCheckedAt: Date | null;
     }>;
-    delete(id: string): Promise<{
+    delete(id: string, operatorId?: string): Promise<{
         success: boolean;
     }>;
 }

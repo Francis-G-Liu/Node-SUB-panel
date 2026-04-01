@@ -10,6 +10,7 @@ import {
 import { TicketStatus } from '@prisma/client';
 import { TicketsService } from './tickets.service';
 import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('tickets')
 @Roles('super_admin', 'ops', 'support')
@@ -47,6 +48,7 @@ export class TicketsAdminController {
 
   @Patch(':id')
   update(
+    @CurrentUser() user: any,
     @Param('id') id: string,
     @Body()
     body: {
@@ -54,17 +56,18 @@ export class TicketsAdminController {
       priority?: 'low' | 'medium' | 'high' | 'critical';
     },
   ) {
-    return this.ticketsService.updateTicket(id, body);
+    return this.ticketsService.updateTicket(id, body, user.id);
   }
 
   @Post(':id/reply')
   reply(
+    @CurrentUser() user: any,
     @Param('id') id: string,
-    @Body() body: { body: string; userId?: string },
+    @Body() body: { body: string },
   ) {
     return this.ticketsService.replyTicket(id, {
       body: body.body,
-      userId: body.userId,
+      userId: user.id,
     });
   }
 }

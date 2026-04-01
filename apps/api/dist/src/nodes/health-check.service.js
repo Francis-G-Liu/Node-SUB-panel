@@ -17,7 +17,7 @@ const prisma_service_1 = require("../database/prisma.service");
 const telemetry_service_1 = require("../observability/telemetry.service");
 const child_process_1 = require("child_process");
 const util_1 = require("util");
-const execAsync = (0, util_1.promisify)(child_process_1.exec);
+const execFileAsync = (0, util_1.promisify)(child_process_1.execFile);
 let HealthCheckService = HealthCheckService_1 = class HealthCheckService {
     prisma;
     telemetry;
@@ -41,12 +41,13 @@ let HealthCheckService = HealthCheckService_1 = class HealthCheckService {
     async checkNode(node) {
         try {
             const isWindows = process.platform === 'win32';
-            const cmd = isWindows
-                ? `ping -n 1 ${node.hostname}`
-                : `ping -c 1 ${node.hostname}`;
+            const cmd = 'ping';
+            const args = isWindows
+                ? ['-n', '1', node.hostname]
+                : ['-c', '1', node.hostname];
             const startTime = Date.now();
             try {
-                const { stdout } = await execAsync(cmd);
+                const { stdout } = await execFileAsync(cmd, args);
                 const latencyMs = Date.now() - startTime;
                 let parsedLatency = latencyMs;
                 const avgMatch = isWindows

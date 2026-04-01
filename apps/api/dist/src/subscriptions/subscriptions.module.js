@@ -15,12 +15,13 @@ const me_controller_1 = require("./me.controller");
 const admin_subscriptions_controller_1 = require("./admin-subscriptions.controller");
 const admin_users_controller_1 = require("./admin-users.controller");
 const admin_categories_controller_1 = require("./admin-categories.controller");
+const observability_module_1 = require("../observability/observability.module");
 let SubscriptionsModule = class SubscriptionsModule {
 };
 exports.SubscriptionsModule = SubscriptionsModule;
 exports.SubscriptionsModule = SubscriptionsModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [database_module_1.DatabaseModule, observability_module_1.ObservabilityModule],
         controllers: [
             plans_controller_1.PlansController,
             me_controller_1.MeController,

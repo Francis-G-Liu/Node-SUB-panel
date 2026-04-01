@@ -15,28 +15,27 @@ export declare class TicketsAdminController {
         page: number;
         pageSize: number;
     }>;
-    update(id: string, body: {
+    update(user: any, id: string, body: {
         status?: 'open' | 'pending' | 'resolved';
         priority?: 'low' | 'medium' | 'high' | 'critical';
     }): Promise<{
-        status: import("@prisma/client").$Enums.TicketStatus;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.TicketStatus;
         userId: string;
         subject: string;
         priority: import("@prisma/client").$Enums.TicketPriority;
         nodeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
-    reply(id: string, body: {
+    reply(user: any, id: string, body: {
         body: string;
-        userId?: string;
     }): Promise<{
         id: string;
-        userId: string | null;
         createdAt: Date;
-        ticketId: string;
+        userId: string | null;
         sender: import("@prisma/client").$Enums.TicketSender;
+        ticketId: string;
         body: string;
     }>;
 }

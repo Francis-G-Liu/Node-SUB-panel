@@ -5,15 +5,16 @@ import { StreamController } from './stream.controller';
 import { NotificationClient } from './notification-client';
 import { AuditLogsController } from './audit-logs.controller';
 import { DatabaseModule } from '../database/database.module';
+import { AuditService } from './audit.service';
 
 @Module({
   imports: [DatabaseModule],
-  providers: [TelemetryService, NotificationClient],
+  providers: [TelemetryService, NotificationClient, AuditService],
   controllers: [
     StreamController,
     AuditLogsController,
     TelemetryIngestController,
   ],
-  exports: [TelemetryService],
+  exports: [TelemetryService, AuditService],
 })
 export class ObservabilityModule {}

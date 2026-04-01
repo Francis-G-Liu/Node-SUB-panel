@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Delete, Body, Param } from '@nestjs/common';
 import { SubscriptionsService } from './subscriptions.service';
 import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 
 @Controller('subscriptions')
 @Roles('super_admin', 'ops', 'support')
@@ -22,12 +23,12 @@ export class AdminSubscriptionsController {
   }
 
   @Post()
-  create(@Body() data: any) {
-    return this.subscriptionsService.createSubscription(data);
+  create(@CurrentUser() user: any, @Body() data: any) {
+    return this.subscriptionsService.createSubscription(data, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subscriptionsService.deleteSubscription(id);
+  remove(@CurrentUser() user: any, @Param('id') id: string) {
+    return this.subscriptionsService.deleteSubscription(id, user.id);
   }
 }

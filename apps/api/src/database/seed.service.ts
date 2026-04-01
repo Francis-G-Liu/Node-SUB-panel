@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { createHash } from 'crypto';
 import { PrismaService } from './prisma.service';
 import { hashSync } from 'bcryptjs';
 
@@ -7,6 +8,10 @@ export class SeedService implements OnModuleInit {
   private readonly logger = new Logger(SeedService.name);
 
   constructor(private readonly prisma: PrismaService) {}
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
 
   async onModuleInit() {
     // 确保系统分类存在 (Ensure system categories exist)
@@ -40,7 +45,7 @@ export class SeedService implements OnModuleInit {
         displayName: 'Super Admin',
         role: 'super_admin',
         passwordHash: hashSync(adminPassword, 10),
-        apiToken: 'admin-token',
+        apiToken: this.hashToken('admin-token'),
         categoryId: adminCat.id,
       },
     });
@@ -51,7 +56,7 @@ export class SeedService implements OnModuleInit {
         displayName: 'Ops Lead',
         role: 'ops',
         passwordHash: hashSync(opsPassword, 10),
-        apiToken: 'ops-token',
+        apiToken: this.hashToken('ops-token'),
         categoryId: adminCat.id,
       },
     });
@@ -62,7 +67,7 @@ export class SeedService implements OnModuleInit {
         displayName: 'Worker Service',
         role: 'ops',
         passwordHash: hashSync('service1234', 10),
-        apiToken: 'service-token',
+        apiToken: this.hashToken('service-token'),
         categoryId: adminCat.id,
       },
     });
@@ -73,7 +78,7 @@ export class SeedService implements OnModuleInit {
         displayName: 'Support Crew',
         role: 'support',
         passwordHash: hashSync('support1234', 10),
-        apiToken: 'support-token',
+        apiToken: this.hashToken('support-token'),
         categoryId: adminCat.id,
       },
     });
@@ -84,7 +89,7 @@ export class SeedService implements OnModuleInit {
         displayName: 'Alpha Pilot',
         role: 'user',
         passwordHash: hashSync(userPassword, 10),
-        apiToken: 'user-token',
+        apiToken: this.hashToken('user-token'),
         categoryId: userCat.id,
       },
     });

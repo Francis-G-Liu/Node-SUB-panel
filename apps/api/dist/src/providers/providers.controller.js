@@ -18,6 +18,7 @@ const providers_service_1 = require("./providers.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
 const create_provider_dto_1 = require("./dto/create-provider.dto");
 const update_provider_dto_1 = require("./dto/update-provider.dto");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let ProvidersController = class ProvidersController {
     providersService;
     constructor(providersService) {
@@ -49,17 +50,17 @@ let ProvidersController = class ProvidersController {
             tags: p.tags,
         };
     }
-    create(dto) {
-        return this.providersService.create(dto);
+    create(user, dto) {
+        return this.providersService.create(dto, user.id);
     }
-    update(id, dto) {
-        return this.providersService.update(id, dto);
+    update(user, id, dto) {
+        return this.providersService.update(id, dto, user.id);
     }
-    delete(id) {
-        return this.providersService.delete(id);
+    delete(user, id) {
+        return this.providersService.delete(id, user.id);
     }
-    sync(id) {
-        return this.providersService.sync(id);
+    sync(user, id) {
+        return this.providersService.sync(id, user.id);
     }
 };
 exports.ProvidersController = ProvidersController;
@@ -78,31 +79,35 @@ __decorate([
 ], ProvidersController.prototype, "findOne", null);
 __decorate([
     (0, common_1.Post)(),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_provider_dto_1.CreateProviderDto]),
+    __metadata("design:paramtypes", [Object, create_provider_dto_1.CreateProviderDto]),
     __metadata("design:returntype", void 0)
 ], ProvidersController.prototype, "create", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, update_provider_dto_1.UpdateProviderDto]),
+    __metadata("design:paramtypes", [Object, String, update_provider_dto_1.UpdateProviderDto]),
     __metadata("design:returntype", void 0)
 ], ProvidersController.prototype, "update", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ProvidersController.prototype, "delete", null);
 __decorate([
     (0, common_1.Post)(':id/sync'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], ProvidersController.prototype, "sync", null);
 exports.ProvidersController = ProvidersController = __decorate([

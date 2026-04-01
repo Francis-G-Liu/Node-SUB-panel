@@ -11,7 +11,7 @@ export declare class AdminSubscriptionsController {
         total: any;
         expiry: any;
     }[]>;
-    create(data: any): Promise<{
+    create(user: any, data: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -22,7 +22,7 @@ export declare class AdminSubscriptionsController {
         userId: string;
         planId: string;
     }>;
-    remove(id: string): import("@prisma/client").Prisma.Prisma__SubscriptionClient<{
+    remove(user: any, id: string): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
@@ -32,5 +32,5 @@ export declare class AdminSubscriptionsController {
         expiresAt: Date;
         userId: string;
         planId: string;
-    }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
+    }>;
 }

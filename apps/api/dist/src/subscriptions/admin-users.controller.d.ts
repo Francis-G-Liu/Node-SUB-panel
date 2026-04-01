@@ -12,38 +12,29 @@ export declare class AdminUsersController {
         }[];
         total: number;
     }>;
-    createUser(data: any): Promise<{
+    createUser(currentUser: any, data: any): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;
     }>;
-    updateUser(id: string, data: any): Promise<{
+    updateUser(currentUser: any, id: string, data: any): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;
     }>;
-    deleteUser(id: string): Promise<{
+    deleteUser(currentUser: any, id: string): Promise<{
         id: string;
         email: string;
         displayName: string;
         role: import("@prisma/client").$Enums.UserRole;
-        passwordHash: string;
-        apiToken: string | null;
-        refreshTokenHash: string | null;
         createdAt: Date;
         updatedAt: Date;
         categoryId: string | null;

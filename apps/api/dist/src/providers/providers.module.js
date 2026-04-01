@@ -11,12 +11,13 @@ const common_1 = require("@nestjs/common");
 const providers_controller_1 = require("./providers.controller");
 const providers_service_1 = require("./providers.service");
 const database_module_1 = require("../database/database.module");
+const observability_module_1 = require("../observability/observability.module");
 let ProvidersModule = class ProvidersModule {
 };
 exports.ProvidersModule = ProvidersModule;
 exports.ProvidersModule = ProvidersModule = __decorate([
     (0, common_1.Module)({
-        imports: [database_module_1.DatabaseModule],
+        imports: [database_module_1.DatabaseModule, observability_module_1.ObservabilityModule],
         controllers: [providers_controller_1.ProvidersController],
         providers: [providers_service_1.ProvidersService],
         exports: [providers_service_1.ProvidersService],

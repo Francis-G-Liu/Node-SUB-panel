@@ -12,6 +12,7 @@ var SeedService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SeedService = void 0;
 const common_1 = require("@nestjs/common");
+const crypto_1 = require("crypto");
 const prisma_service_1 = require("./prisma.service");
 const bcryptjs_1 = require("bcryptjs");
 let SeedService = SeedService_1 = class SeedService {
@@ -19,6 +20,9 @@ let SeedService = SeedService_1 = class SeedService {
     logger = new common_1.Logger(SeedService_1.name);
     constructor(prisma) {
         this.prisma = prisma;
+    }
+    hashToken(token) {
+        return (0, crypto_1.createHash)('sha256').update(token).digest('hex');
     }
     async onModuleInit() {
         const adminCat = await this.prisma.userCategory.upsert({
@@ -46,7 +50,7 @@ let SeedService = SeedService_1 = class SeedService {
                 displayName: 'Super Admin',
                 role: 'super_admin',
                 passwordHash: (0, bcryptjs_1.hashSync)(adminPassword, 10),
-                apiToken: 'admin-token',
+                apiToken: this.hashToken('admin-token'),
                 categoryId: adminCat.id,
             },
         });
@@ -56,7 +60,7 @@ let SeedService = SeedService_1 = class SeedService {
                 displayName: 'Ops Lead',
                 role: 'ops',
                 passwordHash: (0, bcryptjs_1.hashSync)(opsPassword, 10),
-                apiToken: 'ops-token',
+                apiToken: this.hashToken('ops-token'),
                 categoryId: adminCat.id,
             },
         });
@@ -66,7 +70,7 @@ let SeedService = SeedService_1 = class SeedService {
                 displayName: 'Worker Service',
                 role: 'ops',
                 passwordHash: (0, bcryptjs_1.hashSync)('service1234', 10),
-                apiToken: 'service-token',
+                apiToken: this.hashToken('service-token'),
                 categoryId: adminCat.id,
             },
         });
@@ -76,7 +80,7 @@ let SeedService = SeedService_1 = class SeedService {
                 displayName: 'Support Crew',
                 role: 'support',
                 passwordHash: (0, bcryptjs_1.hashSync)('support1234', 10),
-                apiToken: 'support-token',
+                apiToken: this.hashToken('support-token'),
                 categoryId: adminCat.id,
             },
         });
@@ -86,7 +90,7 @@ let SeedService = SeedService_1 = class SeedService {
                 displayName: 'Alpha Pilot',
                 role: 'user',
                 passwordHash: (0, bcryptjs_1.hashSync)(userPassword, 10),
-                apiToken: 'user-token',
+                apiToken: this.hashToken('user-token'),
                 categoryId: userCat.id,
             },
         });

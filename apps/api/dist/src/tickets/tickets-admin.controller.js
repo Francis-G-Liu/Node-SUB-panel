@@ -16,6 +16,7 @@ exports.TicketsAdminController = void 0;
 const common_1 = require("@nestjs/common");
 const tickets_service_1 = require("./tickets.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let TicketsAdminController = class TicketsAdminController {
     ticketsService;
     constructor(ticketsService) {
@@ -42,13 +43,13 @@ let TicketsAdminController = class TicketsAdminController {
             })),
         };
     }
-    update(id, body) {
-        return this.ticketsService.updateTicket(id, body);
+    update(user, id, body) {
+        return this.ticketsService.updateTicket(id, body, user.id);
     }
-    reply(id, body) {
+    reply(user, id, body) {
         return this.ticketsService.replyTicket(id, {
             body: body.body,
-            userId: body.userId,
+            userId: user.id,
         });
     }
 };
@@ -64,18 +65,20 @@ __decorate([
 ], TicketsAdminController.prototype, "list", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", void 0)
 ], TicketsAdminController.prototype, "update", null);
 __decorate([
     (0, common_1.Post)(':id/reply'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", void 0)
 ], TicketsAdminController.prototype, "reply", null);
 exports.TicketsAdminController = TicketsAdminController = __decorate([

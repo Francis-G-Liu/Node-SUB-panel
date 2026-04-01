@@ -4,6 +4,8 @@ import fetch from 'node-fetch';
 import pino from 'pino';
 import { z } from 'zod';
 import { AdminApi } from '@airport/sdk';
+import * as dns from 'dns/promises';
+import * as ipAddr from 'ipaddr.js';
 
 const logger = pino({ level: process.env.LOG_LEVEL ?? 'info' });
 
@@ -39,15 +41,55 @@ const probeSchema = z.object({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TCP-level latency probe via HTTP HEAD
+// TCP-level latency probe via HTTP HEAD with Second-Order SSRF check
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * Checks if the given IP address is in a forbidden range (e.g. private networks, IMDS)
+ */
+function isForbiddenIP(ip: string): boolean {
+  try {
+    const parsed = ipAddr.parse(ip);
+    const range = parsed.range();
+    switch (range) {
+      case 'loopback':
+      case 'private':
+      case 'linkLocal':
+      case 'unspecified':
+      case 'broadcast':
+        return true;
+      default:
+        return false;
+    }
+  } catch (e) {
+    return false;
+  }
+}
+
 const performTcpPing = async (host: string, port: number) => {
+  // SSRF Mitigation: Block probes to internal network and IMDS (169.254.169.254)
+  if (process.env.DISABLE_SSRF_PROTECTION !== 'true') {
+    try {
+      const lookupResult = await dns.lookup(host, { all: true });
+      for (const res of lookupResult) {
+        if (isForbiddenIP(res.address)) {
+          logger.warn({ host, ip: res.address }, 'ssrf_probe_blocked');
+          return undefined; // Pretend it failed/timed out
+        }
+      }
+    } catch (err) {
+      logger.warn({ host, error: err }, 'ssrf_dns_lookup_failed');
+      return undefined;
+    }
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5_000);
   const start = Date.now();
   try {
-    await fetch(`http://${host}:${port}`, { method: 'HEAD', signal: controller.signal });
+    // Note: Node-fetch doesn't strictly prevent DNS rebinding here, but for TCP ping
+    // this pre-flight check blocks the vast majority of practical automated SSRF scanning.
+    await fetch(`http://${host}:${port}`, { method: 'HEAD', signal: controller.signal as any });
     return Date.now() - start;
   } catch (error) {
     logger.warn({ host, port, error }, 'probe_failed');

@@ -44,47 +44,47 @@ export declare class NodesAdminController {
             timestamp: Date;
         }[];
     }>;
-    create(body: CreateNodeDto): Promise<{
+    create(user: any, body: CreateNodeDto): Promise<{
         health: {
             latencyMs: number | null;
             packetLoss: number;
             updatedAt: string;
         } | undefined;
         id: string;
-        providerId: string;
-        hostname: string;
-        port: number;
-        protocol: import("@prisma/client").$Enums.NodeProtocol;
-        region: string;
-        tags: import("@prisma/client/runtime/library").JsonValue;
-        maxBandwidthMbps: number | null;
-        online: boolean;
-        active: boolean;
-        lastCheckedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        active: boolean;
+        tags: import("@prisma/client/runtime/library").JsonValue;
+        port: number;
+        providerId: string;
+        hostname: string;
+        protocol: import("@prisma/client").$Enums.NodeProtocol;
+        region: string;
+        maxBandwidthMbps: number | null;
+        online: boolean;
+        lastCheckedAt: Date | null;
     }>;
-    update(id: string, body: UpdateNodeDto): Promise<{
+    update(user: any, id: string, body: UpdateNodeDto): Promise<{
         health: {
             latencyMs: number | null;
             packetLoss: number;
             updatedAt: string;
         } | undefined;
         id: string;
-        providerId: string;
-        hostname: string;
-        port: number;
-        protocol: import("@prisma/client").$Enums.NodeProtocol;
-        region: string;
-        tags: import("@prisma/client/runtime/library").JsonValue;
-        maxBandwidthMbps: number | null;
-        online: boolean;
-        active: boolean;
-        lastCheckedAt: Date | null;
         createdAt: Date;
         updatedAt: Date;
+        active: boolean;
+        tags: import("@prisma/client/runtime/library").JsonValue;
+        port: number;
+        providerId: string;
+        hostname: string;
+        protocol: import("@prisma/client").$Enums.NodeProtocol;
+        region: string;
+        maxBandwidthMbps: number | null;
+        online: boolean;
+        lastCheckedAt: Date | null;
     }>;
-    remove(id: string): Promise<{
+    remove(user: any, id: string): Promise<{
         success: boolean;
     }>;
 }

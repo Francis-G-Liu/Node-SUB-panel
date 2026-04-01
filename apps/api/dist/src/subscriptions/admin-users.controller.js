@@ -16,6 +16,7 @@ exports.AdminUsersController = void 0;
 const common_1 = require("@nestjs/common");
 const subscriptions_service_1 = require("./subscriptions.service");
 const roles_decorator_1 = require("../auth/roles.decorator");
+const current_user_decorator_1 = require("../auth/current-user.decorator");
 let AdminUsersController = class AdminUsersController {
     subscriptionsService;
     constructor(subscriptionsService) {
@@ -34,14 +35,14 @@ let AdminUsersController = class AdminUsersController {
             total: users.length,
         };
     }
-    createUser(data) {
-        return this.subscriptionsService.createUser(data);
+    createUser(currentUser, data) {
+        return this.subscriptionsService.createUser(data, currentUser.role, currentUser.id);
     }
-    updateUser(id, data) {
-        return this.subscriptionsService.updateUser(id, data);
+    updateUser(currentUser, id, data) {
+        return this.subscriptionsService.updateUser(id, data, currentUser.role, currentUser.id);
     }
-    deleteUser(id) {
-        return this.subscriptionsService.deleteUser(id);
+    deleteUser(currentUser, id) {
+        return this.subscriptionsService.deleteUser(id, currentUser.id);
     }
 };
 exports.AdminUsersController = AdminUsersController;
@@ -54,26 +55,29 @@ __decorate([
 __decorate([
     (0, common_1.Post)(),
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
-    __param(0, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AdminUsersController.prototype, "createUser", null);
 __decorate([
     (0, common_1.Patch)(':id'),
     (0, roles_decorator_1.Roles)('super_admin', 'ops'),
-    __param(0, (0, common_1.Param)('id')),
-    __param(1, (0, common_1.Body)()),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
+    __param(2, (0, common_1.Body)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [Object, String, Object]),
     __metadata("design:returntype", void 0)
 ], AdminUsersController.prototype, "updateUser", null);
 __decorate([
     (0, common_1.Delete)(':id'),
     (0, roles_decorator_1.Roles)('super_admin'),
-    __param(0, (0, common_1.Param)('id')),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object, String]),
     __metadata("design:returntype", void 0)
 ], AdminUsersController.prototype, "deleteUser", null);
 exports.AdminUsersController = AdminUsersController = __decorate([

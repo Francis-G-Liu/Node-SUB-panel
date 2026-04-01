@@ -1,5 +1,6 @@
 import { TicketStatus } from '@prisma/client';
 import { PrismaService } from '../database/prisma.service';
+import { AuditService } from '../observability/audit.service';
 export interface TicketListQuery {
     status?: TicketStatus;
     page?: number;
@@ -7,26 +8,27 @@ export interface TicketListQuery {
 }
 export declare class TicketsService {
     private readonly prisma;
-    constructor(prisma: PrismaService);
+    private readonly audit;
+    constructor(prisma: PrismaService, audit: AuditService);
     listForAdmin(query?: TicketListQuery): Promise<{
         data: ({
             messages: {
                 id: string;
-                userId: string | null;
                 createdAt: Date;
-                ticketId: string;
+                userId: string | null;
                 sender: import("@prisma/client").$Enums.TicketSender;
+                ticketId: string;
                 body: string;
             }[];
         } & {
-            status: import("@prisma/client").$Enums.TicketStatus;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            status: import("@prisma/client").$Enums.TicketStatus;
             userId: string;
             subject: string;
             priority: import("@prisma/client").$Enums.TicketPriority;
             nodeId: string | null;
-            createdAt: Date;
-            updatedAt: Date;
         })[];
         total: number;
         page: number;
@@ -35,21 +37,21 @@ export declare class TicketsService {
     listForUser(userId: string): import("@prisma/client").Prisma.PrismaPromise<({
         messages: {
             id: string;
-            userId: string | null;
             createdAt: Date;
-            ticketId: string;
+            userId: string | null;
             sender: import("@prisma/client").$Enums.TicketSender;
+            ticketId: string;
             body: string;
         }[];
     } & {
-        status: import("@prisma/client").$Enums.TicketStatus;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.TicketStatus;
         userId: string;
         subject: string;
         priority: import("@prisma/client").$Enums.TicketPriority;
         nodeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     })[]>;
     createTicket(user: {
         id: string;
@@ -59,45 +61,45 @@ export declare class TicketsService {
         nodeId?: string;
         priority?: 'low' | 'medium' | 'high' | 'critical';
     }): import("@prisma/client").Prisma.Prisma__TicketClient<{
-        status: import("@prisma/client").$Enums.TicketStatus;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.TicketStatus;
         userId: string;
         subject: string;
         priority: import("@prisma/client").$Enums.TicketPriority;
         nodeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }, never, import("@prisma/client/runtime/library").DefaultArgs, import("@prisma/client").Prisma.PrismaClientOptions>;
     updateTicket(id: string, payload: {
         status?: 'open' | 'pending' | 'resolved';
         priority?: 'low' | 'medium' | 'high' | 'critical';
-    }): Promise<{
-        status: import("@prisma/client").$Enums.TicketStatus;
+    }, operatorId?: string): Promise<{
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        status: import("@prisma/client").$Enums.TicketStatus;
         userId: string;
         subject: string;
         priority: import("@prisma/client").$Enums.TicketPriority;
         nodeId: string | null;
-        createdAt: Date;
-        updatedAt: Date;
     }>;
     replyTicket(id: string, payload: {
         body: string;
-        userId?: string;
+        userId: string;
     }): Promise<{
         id: string;
-        userId: string | null;
         createdAt: Date;
-        ticketId: string;
+        userId: string | null;
         sender: import("@prisma/client").$Enums.TicketSender;
+        ticketId: string;
         body: string;
     }>;
     replyTicketAsUser(ticketId: string, userId: string, body: string): Promise<{
         id: string;
-        userId: string | null;
         createdAt: Date;
-        ticketId: string;
+        userId: string | null;
         sender: import("@prisma/client").$Enums.TicketSender;
+        ticketId: string;
         body: string;
     }>;
 }
